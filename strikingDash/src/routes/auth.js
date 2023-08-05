@@ -8,6 +8,7 @@ const SignUp = lazy(() => import('../container/profile/authentication/overview/S
 const FbLogin = lazy(() => import('../container/profile/authentication/overview/FbSignIn'));
 const FbSignUp = lazy(() => import('../container/profile/authentication/overview/FbSignup'));
 const ForgotPass = lazy(() => import('../container/profile/authentication/overview/ForgotPassword'));
+const CompanyRegister = lazy(() => import('../container/profile/authentication/overview/CompanyRegister'))
 
 function NotFound() {
   return <Redirect to="/" />;
@@ -23,11 +24,12 @@ function FrontendRoutes() {
           </div>
         }
       >
-        <Route exact path="/forgotPassword" component={ForgotPass} />
-        <Route exact path="/register" component={SignUp} />
         <Route exact path="/" component={Login} />
-        <Route exact path="/fbRegister" component={FbSignUp} />
-        <Route exact path="/fbSignIn" component={FbLogin} />
+        <Route path="/forgotPassword" component={ForgotPass} />
+        <Route path="/register" component={SignUp} />
+        <Route path="/company-register" component={CompanyRegister} />
+        <Route path="/fbRegister" component={FbSignUp} />
+        <Route path="/fbSignIn" component={FbLogin} />
         <Route exact path="*" component={NotFound} />
       </Suspense>
     </Switch>

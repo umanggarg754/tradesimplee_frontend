@@ -3,38 +3,31 @@ import { NavLink, useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 // import { FacebookOutlined, TwitterOutlined } from '@ant-design/icons';
 import { Form, Input, Button } from 'antd';
 import toast from 'react-hot-toast';
-// import { useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { AuthWrapper } from './style';
 import { Checkbox } from '../../../../components/checkbox/checkbox';
 import Heading from '../../../../components/heading/heading';
-import { createUserAPI } from '../../../../config/api/login';
+import { createCompanyAPI } from '../../../../config/api/login';
 import { toastStyle } from '../../../../utility/helper'
-// import { login } from '../../../../redux/authentication/actionCreator';
+import { login } from '../../../../redux/authentication/actionCreator';
 
-function SignUp() {
+function CompanyRegister() {
   const history = useHistory();
-  // const dispatch = useDispatch();
-
+  const dispatch = useDispatch();
 
   const [state, setState] = useState({
-    values: null,
     checked: null,
     name : "",
-    linkedIN : "",
-    email : "",
-    phone : "",
-    whatsapp : "",
-    password : "",
-    summary : ""
+    ic_number : "",
+    gst : "",
+    pan : "",
+    address : "",
+    city : "",
   });
 
   const handleChange = (e) => {
     setState({ ...state, [e.target.name]: e.target.value });
   }
-  
-  const handleSubmit = (values) => {
-    setState({ ...state, values });
-  };
 
   const onChange = (checked) => {
     setState({ ...state, checked });
@@ -46,42 +39,44 @@ function SignUp() {
         Already have an account? <NavLink to="/">Sign In</NavLink>
       </p>
       <div className="auth-contents">
-        <Form name="register" onFinish={handleSubmit} layout="vertical">
+        <Form name="register" layout="vertical">
           <Heading as="h3">
-            Sign Up <span className="color-secondary"> </span>
+            Enter Your Company Details <span className="color-secondary"> </span>
           </Heading>
           <Form.Item label="Name" rules={[{ required: true, message: 'Please input your Full name!' }]}>
             <Input placeholder="Full name" name="name" onChange={handleChange}/>
           </Form.Item>
           <Form.Item
-            label="LinkedIN URL"
+            label="IC Number"
+            rules={[{ required: true, message: 'Please input your ic number!'}]}
           >
-            <Input placeholder="URL" name="linkedIN" onChange={handleChange}/>
+            <Input name="ic_number" onChange={handleChange}/>
           </Form.Item>
           <Form.Item
-            label="Email Address"
-            rules={[{ required: true, message: 'Please input your email!', type: 'email' }]}
+            label="GST Number"
+            rules={[{ required: true, message: 'Please input your GST number!'}]}
           >
-            <Input placeholder="name@example.com" name="email" onChange={handleChange}/>
+            <Input name="gst" onChange={handleChange}/>
           </Form.Item>
           <Form.Item
-            label="Phone Number"
-            rules={[{ required: true, message: 'Please input your phone number!'}]}
+            label="PAN Number"
+            rules={[{ required: true, message: 'Please input your PAN number!'}]}
           >
-            <Input placeholder="+91- " name="phone" onChange={handleChange}/>
+            <Input name="pan" onChange={handleChange}/>
           </Form.Item>
           <Form.Item
-            label="WhatsApp Number"
-            rules={[{ required: true, message: 'Please input your Whatapp number!'}]}
+            label="Address"
+            rules={[{ required: true, message: 'Please input your address!'}]}
           >
-            <Input placeholder="+91- " name="whatsapp" onChange={handleChange}/>
+            <Input name="address" onChange={handleChange}/>
           </Form.Item>
           <Form.Item
-            label="Password"
-            rules={[{ required: true, message: 'Please input your password!' }]}
+            label="City"
+            rules={[{ required: true, message: 'Please input your city!'}]}
           >
-            <Input.Password name="password" placeholder="Password" onChange={handleChange}/>
+            <Input name="city" onChange={handleChange}/>
           </Form.Item>
+          
           <div className="auth-form-action">
             <Checkbox onChange={onChange} checked={state.checked}>
               Creating an account means you’re okay with our Terms of Service and Privacy Policy
@@ -92,19 +87,18 @@ function SignUp() {
               console.log(state)
               const params = {
                 name : state.name,
-                linkedin : state.linkedIN,
-                email : state.email,
-                phone : state.phone,
-                whatsapp : state.whatsapp,
-                password : state.password,
-                summary : state.summary
+                ic_number : state.ic_number,
+                gst : state.gst,
+                pan : state.pan,
+                address : state.address,
+                city : state.city,
               }
-              const response = await createUserAPI(params)
+              const response = await createCompanyAPI(params)
               console.log(response);
               if(response?.status===201){
                 toast.success('SignUp Successfull 🥳',{...toastStyle.success})
-                // dispatch(login());
-                history.push('/company-register');
+                dispatch(login());
+                history.push('/admin/contact/list');
               }else{
                 toast.error('Please try again 😞',{...toastStyle.error})
               }
@@ -139,4 +133,4 @@ function SignUp() {
   );
 }
 
-export default SignUp;
+export default CompanyRegister;

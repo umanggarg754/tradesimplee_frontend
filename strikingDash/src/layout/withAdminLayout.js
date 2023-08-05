@@ -9,11 +9,12 @@ import { Scrollbars } from 'react-custom-scrollbars';
 import { ThemeProvider } from 'styled-components';
 import { connect } from 'react-redux';
 import propTypes from 'prop-types';
-import FontAwesome from 'react-fontawesome';
+// import FontAwesome from 'react-fontawesome';
 import MenueItems from './MenueItems';
 import TopMenu from './TopMenu';
-import { Div, SmallScreenAuthInfo, SmallScreenSearch, TopMenuSearch } from './style';
-import HeaderSearch from '../components/header-search/header-search';
+import { Div, SmallScreenAuthInfo } from './style';
+// import { Div, SmallScreenAuthInfo, SmallScreenSearch, TopMenuSearch } from './style';
+// import HeaderSearch from '../components/header-search/header-search';
 import AuthInfo from '../components/utilities/auth-info/info';
 import { changeRtlMode, changeLayoutMode, changeMenuMode } from '../redux/themeLayout/actionCreator';
 
@@ -29,9 +30,9 @@ const ThemeLayout = (WrappedComponent) => {
       this.state = {
         collapsed: false,
         hide: true,
-        searchHide: true,        
-        activeSearch: false,
-        customizerAction: false
+        // searchHide: true,        
+        // activeSearch: false,
+        // customizerAction: false
       };
       this.updateDimensions = this.updateDimensions.bind(this);
     }
@@ -52,7 +53,9 @@ const ThemeLayout = (WrappedComponent) => {
     }
 
     render() {
-      const { collapsed, hide, searchHide, activeSearch, customizerAction } = this.state;
+      // const { collapsed, hide, searchHide, activeSearch, customizerAction } = this.state;
+      const { collapsed, hide } = this.state;
+
       const { ChangeLayoutMode, rtl, topMenu, changeRtl, changeLayout, changeMenuMode } = this.props;
 
       const left = !rtl ? 'left' : 'right';
@@ -71,32 +74,32 @@ const ThemeLayout = (WrappedComponent) => {
         }
       };
 
-      const showCustomizer = () => {
-        this.setState({
-          customizerAction: !customizerAction,
-        });
-      };
+      // const showCustomizer = () => {
+      //   this.setState({
+      //     customizerAction: !customizerAction,
+      //   });
+      // };
 
       const onShowHide = () => {
         this.setState({
           hide: !hide,
-          searchHide: true,
+          // searchHide: true,
         });
       };
 
-      const toggleSearch = () => {
-        this.setState({
-          activeSearch: !activeSearch,
-        });
-      };
+      // const toggleSearch = () => {
+      //   this.setState({
+      //     activeSearch: !activeSearch,
+      //   });
+      // };
 
-      const handleSearchHide = (e) => {
-        e.preventDefault();
-        this.setState({
-          searchHide: !searchHide,
-          hide: true,
-        });
-      };
+      // const handleSearchHide = (e) => {
+      //   e.preventDefault();
+      //   this.setState({
+      //     searchHide: !searchHide,
+      //     hide: true,
+      //   });
+      // };
 
       const footerStyle = {
         padding: '20px 30px 18px',
@@ -229,34 +232,35 @@ const ThemeLayout = (WrappedComponent) => {
                 </Col>
 
                 <Col lg={!topMenu ? 14 : 15} md={8} sm={0} xs={0}>
-                  {topMenu && window.innerWidth > 991 ? <TopMenu /> : <HeaderSearch rtl={rtl} darkMode={darkMode} />}
+                  {topMenu && window.innerWidth > 991 ? <TopMenu /> : null}
                 </Col>
 
                 <Col lg={6} md={10} sm={0} xs={0}>
                   {topMenu && window.innerWidth > 991 ? (
-                    <TopMenuSearch>
-                      <div className="top-right-wrap d-flex">
-                        <Link
-                          className={`${activeSearch ? 'search-toggle active' : 'search-toggle'}`}
-                          onClick={() => {
-                            toggleSearch();
-                          }}
-                          to="#"
-                        >
-                          <FeatherIcon icon="search" />
-                          <FeatherIcon icon="x" />
-                        </Link>
-                        <div className={`${activeSearch ? 'topMenu-search-form show' : 'topMenu-search-form'}`}>
-                          <form action="">
-                            <span className="search-icon">
-                              <FeatherIcon icon="search" />
-                            </span>
-                            <input type="text" name="search" />
-                          </form>
-                        </div>
-                        <AuthInfo />
-                      </div>
-                    </TopMenuSearch>
+                    // <TopMenuSearch>
+                    //   <div className="top-right-wrap d-flex">
+                    //     <Link
+                    //       className={`${activeSearch ? 'search-toggle active' : 'search-toggle'}`}
+                    //       onClick={() => {
+                    //         toggleSearch();
+                    //       }}
+                    //       to="#"
+                    //     >
+                    //       <FeatherIcon icon="search" />
+                    //       <FeatherIcon icon="x" />
+                    //     </Link>
+                    //     <div className={`${activeSearch ? 'topMenu-search-form show' : 'topMenu-search-form'}`}>
+                    //       <form action="">
+                    //         <span className="search-icon">
+                    //           <FeatherIcon icon="search" />
+                    //         </span>
+                    //         <input type="text" name="search" />
+                    //       </form>
+                    //     </div>
+                    //     <AuthInfo />
+                    //   </div>
+                    // </TopMenuSearch>
+                    null
                   ) : (
                     <AuthInfo />
                   )}
@@ -264,9 +268,9 @@ const ThemeLayout = (WrappedComponent) => {
 
                 <Col md={0} sm={18} xs={12}>
                   <div className="mobile-action">
-                    <Link className="btn-search" onClick={handleSearchHide} to="#">
+                    {/* <Link className="btn-search" onClick={handleSearchHide} to="#">
                       {searchHide ? <FeatherIcon icon="search" /> : <FeatherIcon icon="x" />}
-                    </Link>
+                    </Link> */}
                     <Link className="btn-auth" onClick={onShowHide} to="#">
                       <FeatherIcon icon="more-vertical" />
                     </Link>
@@ -278,9 +282,9 @@ const ThemeLayout = (WrappedComponent) => {
               <Row>
                 <Col md={0} sm={24} xs={24}>
                   <div className="small-screen-headerRight">
-                    <SmallScreenSearch hide={searchHide} darkMode={darkMode}>
+                    {/* <SmallScreenSearch hide={searchHide} darkMode={darkMode}>
                       <HeaderSearch rtl={rtl} />
-                    </SmallScreenSearch>
+                    </SmallScreenSearch> */}
                     <SmallScreenAuthInfo hide={hide} darkMode={darkMode}>
                       <AuthInfo rtl={rtl} />
                     </SmallScreenAuthInfo>
@@ -335,7 +339,7 @@ const ThemeLayout = (WrappedComponent) => {
               </Layout>
             </Layout>
           </Layout>
-          <Link
+          {/* <Link
             to="#"
             className="customizer-trigger"
             onClick={() => {
@@ -343,8 +347,8 @@ const ThemeLayout = (WrappedComponent) => {
             }}
           >
             <FeatherIcon icon="settings" />
-          </Link>
-          <div className={`${customizerAction ? 'customizer-wrapper show' : 'customizer-wrapper'}`}>
+          </Link> */}
+          {/* <div className={`${customizerAction ? 'customizer-wrapper show' : 'customizer-wrapper'}`}>
             <div className="customizer">
               <div className="customizer__head">
                 <h4 className="customizer__title">Customizer</h4>
@@ -455,13 +459,13 @@ const ThemeLayout = (WrappedComponent) => {
                 </div>
               </div>
             </div>
-          </div>
-          <span
+          </div> */}
+          {/* <span
             className={`${customizerAction ? 'overlay-dark show' : 'overlay-dark'}`}
             onClick={() => {
               showCustomizer();
             }}
-          />
+          /> */}
         </Div>
       );
     }
