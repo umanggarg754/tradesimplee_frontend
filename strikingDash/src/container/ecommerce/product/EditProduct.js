@@ -140,6 +140,8 @@ function EditProduct() {
   //   setState({ ...state, submitValues: values });
   // };
 const generateFormData = (data) => {
+
+  console.log(data);
   const formData = new FormData();
 
   Object.keys(data).forEach((key) => {
@@ -171,6 +173,8 @@ const generateFormData = (data) => {
     }
   });
 
+  console.log(JSON.stringify(formData))
+
   return formData;
 };
   
@@ -196,18 +200,18 @@ const generateFormData = (data) => {
       quantity: "",
       stauts:"",
       photo:"",
-      other_details:{
-        packing:"",
-        box:"",
-        marksandnums:"",
-        sqm : "",
-        pricepersqm : "",
-        container : "",
-        pallets : "",
-        pcsperbox : "",
-        brand : "",
-        grossweight : ""
-      }
+      // other_details:{
+      //   packing:"",
+      //   box:"",
+      //   marksandnums:"",
+      //   sqm : "",
+      //   pricepersqm : "",
+      //   container : "",
+      //   pallets : "",
+      //   pcsperbox : "",
+      //   brand : "",
+      //   grossweight : ""
+      // }
     }]
   })
 
@@ -238,26 +242,26 @@ const generateFormData = (data) => {
     });
   };
 
-  const handleOtherDetailsChange = (productIndex, e) => {
-    const { name, value } = e.target;
+  // const handleOtherDetailsChange = (productIndex, e) => {
+  //   const { name, value } = e.target;
   
-    setCreateOrderJSONData(prevData => {
-      const updatedProducts = [...prevData.products];
-      const updatedProduct = { ...updatedProducts[productIndex] };
-      const updatedOtherDetails = {
-        ...updatedProduct.other_details,
-        [name]: value
-      };
+  //   setCreateOrderJSONData(prevData => {
+  //     const updatedProducts = [...prevData.products];
+  //     const updatedProduct = { ...updatedProducts[productIndex] };
+  //     const updatedOtherDetails = {
+  //       ...updatedProduct.other_details,
+  //       [name]: value
+  //     };
   
-      updatedProduct.other_details = updatedOtherDetails;
-      updatedProducts[productIndex] = updatedProduct;
+  //     updatedProduct.other_details = updatedOtherDetails;
+  //     updatedProducts[productIndex] = updatedProduct;
   
-      return {
-        ...prevData,
-        products: updatedProducts
-      };
-    });
-  };
+  //     return {
+  //       ...prevData,
+  //       products: updatedProducts
+  //     };
+  //   });
+  // };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -273,13 +277,13 @@ const generateFormData = (data) => {
 
 
       console.log(response)
-      // if (response.ok) {
-      //   // Handle success
-      //   console.log('Order created successfully');
-      // } else {
-      //   // Handle error
-      //   console.error('Error creating order');
-      // }
+      if (response.status===201) {
+        // Handle success
+        console.log('Order created successfully');
+      } else {
+        // Handle error
+        console.error('Error creating order');
+      }
     } catch (error) {
       console.error('Error:', error);
     }
@@ -302,7 +306,7 @@ const generateFormData = (data) => {
       ),
       packing : (
         <Form.Item>
-          <Input name="packing" onChange={(e)=>handleOtherDetailsChange(0, e)}/>
+          <Input name="packing" onChange={(e)=>handleProductFieldChange(0, e)}/>
         </Form.Item>
       ),
       quantity : (
@@ -312,27 +316,27 @@ const generateFormData = (data) => {
       ),
       sqm : (
         <Form.Item>
-          <Input name="sqm" onChange={(e)=>handleOtherDetailsChange(0, e)}/>
+          <Input name="sqm" onChange={(e)=>handleProductFieldChange(0, e)}/>
         </Form.Item>
       ),
       pricepersqm : (
         <Form.Item>
-          <Input name="pricepersqm" onChange={(e)=>handleOtherDetailsChange(0, e)}/>
+          <Input name="pricepersqm" onChange={(e)=>handleProductFieldChange(0, e)}/>
         </Form.Item>
       ),
       box : (
         <Form.Item>
-          <Input name="box" onChange={(e)=>handleOtherDetailsChange(0, e)}/>
+          <Input name="box" onChange={(e)=>handleProductFieldChange(0, e)}/>
         </Form.Item>
       ),
       marksandnums : (
         <Form.Item>
-          <Input name="marksandnums" onChange={(e)=>handleOtherDetailsChange(0, e)}/>
+          <Input name="marksandnums" onChange={(e)=>handleProductFieldChange(0, e)}/>
         </Form.Item>
       ),
       container : (
         <Form.Item>
-          <Input name="container" onChange={(e)=>handleOtherDetailsChange(0, e)}/>
+          <Input name="container" onChange={(e)=>handleProductFieldChange(0, e)}/>
         </Form.Item>
       ),
       photo : (
@@ -342,22 +346,22 @@ const generateFormData = (data) => {
       ),
       pallets : (
         <Form.Item>
-          <Input name="pallets" onChange={(e)=>handleOtherDetailsChange(0, e)}/>
+          <Input name="pallets" onChange={(e)=>handleProductFieldChange(0, e)}/>
         </Form.Item>
       ),
       pcsperbox : (
         <Form.Item>
-          <Input name="pcsperbox" onChange={(e)=>handleOtherDetailsChange(0, e)}/>
+          <Input name="pcsperbox" onChange={(e)=>handleProductFieldChange(0, e)}/>
         </Form.Item>
       ),
       brand : (
         <Form.Item>
-          <Input name="brand" onChange={(e)=>handleOtherDetailsChange(0, e)}/>
+          <Input name="brand" onChange={(e)=>handleProductFieldChange(0, e)}/>
         </Form.Item>
       ),
       grossweight : (
         <Form.Item>
-          <Input name="grossweight" onChange={(e)=>handleOtherDetailsChange(0, e)}/>
+          <Input name="grossweight" onChange={(e)=>handleProductFieldChange(0, e)}/>
         </Form.Item>
       ),
       totalamount : (
@@ -389,7 +393,7 @@ const generateFormData = (data) => {
       ),
       packing : (
         <Form.Item>
-          <Input name="packing" onChange={(e)=>handleOtherDetailsChange(idx-1, e)}/>
+          <Input name="packing" onChange={(e)=>handleProductFieldChange(idx-1, e)}/>
         </Form.Item>
       ),
       quantity : (
@@ -399,27 +403,27 @@ const generateFormData = (data) => {
       ),
       sqm : (
         <Form.Item>
-          <Input name="sqm" onChange={(e)=>handleOtherDetailsChange(idx-1, e)}/>
+          <Input name="sqm" onChange={(e)=>handleProductFieldChange(idx-1, e)}/>
         </Form.Item>
       ),
       pricepersqm : (
         <Form.Item>
-          <Input name="pricepersqm" onChange={(e)=>handleOtherDetailsChange(idx-1, e)}/>
+          <Input name="pricepersqm" onChange={(e)=>handleProductFieldChange(idx-1, e)}/>
         </Form.Item>
       ),
       box : (
         <Form.Item>
-          <Input name="box" onChange={(e)=>handleOtherDetailsChange(idx-1, e)}/>
+          <Input name="box" onChange={(e)=>handleProductFieldChange(idx-1, e)}/>
         </Form.Item>
       ),
       marksandnums : (
         <Form.Item>
-          <Input name="marksandnums" onChange={(e)=>handleOtherDetailsChange(idx-1, e)}/>
+          <Input name="marksandnums" onChange={(e)=>handleProductFieldChange(idx-1, e)}/>
         </Form.Item>
       ),
       container : (
         <Form.Item>
-          <Input name="container" onChange={(e)=>handleOtherDetailsChange(idx-1, e)}/>
+          <Input name="container" onChange={(e)=>handleProductFieldChange(idx-1, e)}/>
         </Form.Item>
       ),
       photo : (
@@ -429,22 +433,22 @@ const generateFormData = (data) => {
       ),
       pallets : (
         <Form.Item>
-          <Input name="pallets" onChange={(e)=>handleOtherDetailsChange(idx-1, e)}/>
+          <Input name="pallets" onChange={(e)=>handleProductFieldChange(idx-1, e)}/>
         </Form.Item>
       ),
       pcsperbox : (
         <Form.Item>
-          <Input name="pcsperbox" onChange={(e)=>handleOtherDetailsChange(idx-1, e)}/>
+          <Input name="pcsperbox" onChange={(e)=>handleProductFieldChange(idx-1, e)}/>
         </Form.Item>
       ),
       brand : (
         <Form.Item>
-          <Input name="brand" onChange={(e)=>handleOtherDetailsChange(idx-1, e)}/>
+          <Input name="brand" onChange={(e)=>handleProductFieldChange(idx-1, e)}/>
         </Form.Item>
       ),
       grossweight : (
         <Form.Item>
-          <Input name="grossweight" onChange={(e)=>handleOtherDetailsChange(idx-1, e)}/>
+          <Input name="grossweight" onChange={(e)=>handleProductFieldChange(idx-1, e)}/>
         </Form.Item>
       ),
       totalamount : (
