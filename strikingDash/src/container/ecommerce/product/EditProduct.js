@@ -1,111 +1,549 @@
 import React, { useState } from 'react';
-import { Row, Col, Form, Input, Select, InputNumber, Radio, Upload, message } from 'antd';
-import FeatherIcon from 'feather-icons-react';
+import { Row, Col, Form, Input, Table } from 'antd';
+// import FeatherIcon from 'feather-icons-react';
 import { PageHeader } from '../../../components/page-headers/page-headers';
 import { Cards } from '../../../components/cards/frame/cards-frame';
-import { Main, BasicFormWrapper } from '../../styled';
+import { Main, BasicFormWrapper, TableWrapper } from '../../styled';
 import { Button } from '../../../components/buttons/buttons';
 import { AddProductForm } from '../Style';
-import Heading from '../../../components/heading/heading';
-import { ShareButtonPageHeader } from '../../../components/buttons/share-button/share-button';
-import { ExportButtonPageHeader } from '../../../components/buttons/export-button/export-button';
-import { CalendarButtonPageHeader } from '../../../components/buttons/calendar-button/calendar-button';
+import { createOrderAPI } from '../../../config/api/orders';
+// import Heading from '../../../components/heading/heading';
+// import { ShareButtonPageHeader } from '../../../components/buttons/share-button/share-button';
+// import { ExportButtonPageHeader } from '../../../components/buttons/export-button/export-button';
+// import { CalendarButtonPageHeader } from '../../../components/buttons/calendar-button/calendar-button';
 
-const { Option } = Select;
-const { Dragger } = Upload;
+// const { Option } = Select;
+// const { Dragger } = Upload;
 
 function EditProduct() {
   const [form] = Form.useForm();
-  const [state, setState] = useState({
-    file: null,
-    list: null,
-    submitValues: {},
-  });
+  // const [state, setState] = useState({
+  //   file: null,
+  //   list: null,
+  //   submitValues: {},
+  // });
 
-  const fileList = [
+  // const fileList = [
+  //   {
+  //     uid: '1',
+  //     name: 'xxx.png',
+  //     status: 'done',
+  //     url: require('../../../static/img/products/1.png'),
+  //     thumbUrl: require('../../../static/img/products/1.png'),
+  //   },
+  // ];
+
+  // const fileUploadProps = {
+  //   name: 'file',
+  //   multiple: true,
+  //   action: 'https://www.mocky.io/v2/5cc8019d300000980a055e76',
+  //   onChange(info) {
+  //     const { status } = info.file;
+  //     if (status !== 'uploading') {
+  //       setState({ ...state, file: info.file, list: info.fileList });
+  //     }
+  //     if (status === 'done') {
+  //       message.success(`${info.file.name} file uploaded successfully.`);
+  //     } else if (status === 'error') {
+  //       message.error(`${info.file.name} file upload failed.`);
+  //     }
+  //   },
+  //   listType: 'picture',
+  //   defaultFileList: fileList,
+  //   showUploadList: {
+  //     showRemoveIcon: true,
+  //     removeIcon: <FeatherIcon icon="trash-2" onClick={e => console.log(e, 'custom removeIcon event')} />,
+  //   },
+  // };
+
+  const columns = [
     {
-      uid: '1',
-      name: 'xxx.png',
-      status: 'done',
-      url: require('../../../static/img/products/1.png'),
-      thumbUrl: require('../../../static/img/products/1.png'),
+      title: 'Serial No',
+      dataIndex: 'serialno',
+      key: 'serialno',
     },
+    {
+      title: 'Name',
+      dataIndex: 'product_name',
+      key: 'product_name',
+    },
+    {
+      title: 'Packing',
+      dataIndex: 'packing',
+      key: 'packing',
+    },
+    {
+      title: 'Quantity',
+      dataIndex: 'quantity',
+      key: 'quantity',
+    },
+    {
+      title: 'SQM',
+      dataIndex: 'sqm',
+      key: 'sqm',
+    },
+    {
+      title: 'Price per SQM',
+      dataIndex: 'pricepersqm',
+      key: 'pricepersqm',
+    },
+    {
+      title: 'Box',
+      dataIndex: 'box',
+      key: 'box',
+    },
+    {
+      title: 'Marks & No.',
+      dataIndex: 'marksandnums',
+      key: 'marksandnums',
+    },
+    {
+      title: 'Container',
+      dataIndex: 'container',
+      key: 'container',
+    },
+    {
+      title: 'Design Photo',
+      dataIndex: 'photo',
+      key: 'photo',
+    },
+    {
+      title: 'Pallets',
+      dataIndex: 'pallets',
+      key: 'pallets',
+    },
+    {
+      title: 'Pcs Per Box',
+      dataIndex: 'pcsperbox',
+      key: 'pcsperbox',
+    },
+    {
+      title: 'Brand',
+      dataIndex: 'brand',
+      key: 'brand',
+    },
+    {
+      title: 'Gross Weight',
+      dataIndex: 'grossweight',
+      key: 'grossweight',
+    },
+    {
+      title: 'Total Amount',
+      dataIndex: 'totalamount',
+      key: 'totalamount',
+    }
   ];
 
-  const fileUploadProps = {
-    name: 'file',
-    multiple: true,
-    action: 'https://www.mocky.io/v2/5cc8019d300000980a055e76',
-    onChange(info) {
-      const { status } = info.file;
-      if (status !== 'uploading') {
-        setState({ ...state, file: info.file, list: info.fileList });
+  
+
+  // const handleSubmit = values => {
+  //   setState({ ...state, submitValues: values });
+  // };
+const generateFormData = (data) => {
+  const formData = new FormData();
+
+  Object.keys(data).forEach((key) => {
+    if (Array.isArray(data[key])) {
+      data[key].forEach((item, index) => {
+        if (typeof item === "object") {
+          Object.keys(item).forEach((subKey) => {
+            const subItem = item[subKey];
+            if (typeof subItem === "object") {
+              Object.keys(subItem).forEach((subSubKey) => {
+                const value = subItem[subSubKey];
+                formData.append(`${key}[${index}][${subKey}][${subSubKey}]`, value);
+              });
+            } else {
+              formData.append(`${key}[${index}][${subKey}]`, subItem);
+            }
+          });
+        } else {
+          formData.append(`${key}[${index}]`, item);
+        }
+      });
+    } else if (typeof data[key] === "object") {
+      Object.keys(data[key]).forEach((subKey) => {
+        const value = data[key][subKey];
+        formData.append(`${key}[${subKey}]`, value);
+      });
+    } else {
+      formData.append(key, data[key]);
+    }
+  });
+
+  return formData;
+};
+  
+  
+
+  
+
+
+
+  const [createOrderJSONData, setCreateOrderJSONData] = useState({
+    customerName: "",
+    status : "",
+    invoice_number : "",
+    order_number : "",
+    date : "",
+    currency : "",
+    terms_and_conditions : "",
+    customer_notes : "",
+    products : [{
+      serial_num:"",
+      product_name:"",
+      price:"",
+      quantity: "",
+      stauts:"",
+      photo:"",
+      other_details:{
+        packing:"",
+        box:"",
+        marksandnums:"",
+        sqm : "",
+        pricepersqm : "",
+        container : "",
+        pallets : "",
+        pcsperbox : "",
+        brand : "",
+        grossweight : ""
       }
-      if (status === 'done') {
-        message.success(`${info.file.name} file uploaded successfully.`);
-      } else if (status === 'error') {
-        message.error(`${info.file.name} file upload failed.`);
-      }
-    },
-    listType: 'picture',
-    defaultFileList: fileList,
-    showUploadList: {
-      showRemoveIcon: true,
-      removeIcon: <FeatherIcon icon="trash-2" onClick={e => console.log(e, 'custom removeIcon event')} />,
-    },
+    }]
+  })
+
+  const handleNormalFieldChange = (e) => {
+    setCreateOrderJSONData(prevData => ({
+      ...prevData,
+      [e.target.name]: e.target.value
+    }));
+  };
+  
+
+  const handleProductFieldChange = (index, e) => {
+    setCreateOrderJSONData(prevData => {
+      const updatedProducts = [...prevData.products];
+      updatedProducts[index] = {
+        ...updatedProducts[index],
+        "serial_num": index+1
+      };
+      updatedProducts[index] = {
+        ...updatedProducts[index],
+        [e.target.name]: e.target.value
+      };
+  
+      return {
+        ...prevData,
+        products: updatedProducts
+      };
+    });
   };
 
-  const handleSubmit = values => {
-    setState({ ...state, submitValues: values });
+  const handleOtherDetailsChange = (productIndex, e) => {
+    const { name, value } = e.target;
+  
+    setCreateOrderJSONData(prevData => {
+      const updatedProducts = [...prevData.products];
+      const updatedProduct = { ...updatedProducts[productIndex] };
+      const updatedOtherDetails = {
+        ...updatedProduct.other_details,
+        [name]: value
+      };
+  
+      updatedProduct.other_details = updatedOtherDetails;
+      updatedProducts[productIndex] = updatedProduct;
+  
+      return {
+        ...prevData,
+        products: updatedProducts
+      };
+    });
   };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    const formData = generateFormData(createOrderJSONData)
+
+    console.log(formData)
+    console.log(createOrderJSONData)
+
+    try {
+      const token = localStorage.getItem("loginToken")
+      const response = await createOrderAPI(formData, token);
+
+
+      console.log(response)
+      // if (response.ok) {
+      //   // Handle success
+      //   console.log('Order created successfully');
+      // } else {
+      //   // Handle error
+      //   console.error('Error creating order');
+      // }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+  
+
+
+  const dataSource = [
+    {
+      serialno : (
+        <Form.Item>
+          {/* <Input name="serialno"/> */}
+          <p>1</p>
+        </Form.Item>
+      ),
+      product_name : (
+        <Form.Item>
+          <Input name="product_name" onChange={(e)=>handleProductFieldChange(0, e)}/>
+        </Form.Item>
+      ),
+      packing : (
+        <Form.Item>
+          <Input name="packing" onChange={(e)=>handleOtherDetailsChange(0, e)}/>
+        </Form.Item>
+      ),
+      quantity : (
+        <Form.Item>
+          <Input name="quantity" onChange={(e)=>handleProductFieldChange(0, e)}/>
+        </Form.Item>
+      ),
+      sqm : (
+        <Form.Item>
+          <Input name="sqm" onChange={(e)=>handleOtherDetailsChange(0, e)}/>
+        </Form.Item>
+      ),
+      pricepersqm : (
+        <Form.Item>
+          <Input name="pricepersqm" onChange={(e)=>handleOtherDetailsChange(0, e)}/>
+        </Form.Item>
+      ),
+      box : (
+        <Form.Item>
+          <Input name="box" onChange={(e)=>handleOtherDetailsChange(0, e)}/>
+        </Form.Item>
+      ),
+      marksandnums : (
+        <Form.Item>
+          <Input name="marksandnums" onChange={(e)=>handleOtherDetailsChange(0, e)}/>
+        </Form.Item>
+      ),
+      container : (
+        <Form.Item>
+          <Input name="container" onChange={(e)=>handleOtherDetailsChange(0, e)}/>
+        </Form.Item>
+      ),
+      photo : (
+        <Form.Item>
+          <Input name="photo" onChange={(e)=>handleProductFieldChange(0, e)}/>
+        </Form.Item>
+      ),
+      pallets : (
+        <Form.Item>
+          <Input name="pallets" onChange={(e)=>handleOtherDetailsChange(0, e)}/>
+        </Form.Item>
+      ),
+      pcsperbox : (
+        <Form.Item>
+          <Input name="pcsperbox" onChange={(e)=>handleOtherDetailsChange(0, e)}/>
+        </Form.Item>
+      ),
+      brand : (
+        <Form.Item>
+          <Input name="brand" onChange={(e)=>handleOtherDetailsChange(0, e)}/>
+        </Form.Item>
+      ),
+      grossweight : (
+        <Form.Item>
+          <Input name="grossweight" onChange={(e)=>handleOtherDetailsChange(0, e)}/>
+        </Form.Item>
+      ),
+      totalamount : (
+        <Form.Item>
+          <Input name="price" onChange={(e)=>handleProductFieldChange(0, e)}/>
+        </Form.Item>
+      )
+    }
+  ]
+
+
+  const [productRow, setProductRow] = useState(dataSource);
+  
+
+  const addProductBtn = () =>{
+
+    const idx=productRow.length+1;
+    const tempDataSource = {
+      serialno : (
+        <Form.Item>
+          {/* <Input name={`serialno-${idx}`} defaultValue={idx} /> */}
+          <p>{idx}</p>
+        </Form.Item>
+      ),
+      product_name : (
+        <Form.Item>
+          <Input name="product_name" onChange={(e)=>handleProductFieldChange(idx-1, e)}/>
+        </Form.Item>
+      ),
+      packing : (
+        <Form.Item>
+          <Input name="packing" onChange={(e)=>handleOtherDetailsChange(idx-1, e)}/>
+        </Form.Item>
+      ),
+      quantity : (
+        <Form.Item>
+          <Input name="quantity" onChange={(e)=>handleProductFieldChange(idx-1, e)}/>
+        </Form.Item>
+      ),
+      sqm : (
+        <Form.Item>
+          <Input name="sqm" onChange={(e)=>handleOtherDetailsChange(idx-1, e)}/>
+        </Form.Item>
+      ),
+      pricepersqm : (
+        <Form.Item>
+          <Input name="pricepersqm" onChange={(e)=>handleOtherDetailsChange(idx-1, e)}/>
+        </Form.Item>
+      ),
+      box : (
+        <Form.Item>
+          <Input name="box" onChange={(e)=>handleOtherDetailsChange(idx-1, e)}/>
+        </Form.Item>
+      ),
+      marksandnums : (
+        <Form.Item>
+          <Input name="marksandnums" onChange={(e)=>handleOtherDetailsChange(idx-1, e)}/>
+        </Form.Item>
+      ),
+      container : (
+        <Form.Item>
+          <Input name="container" onChange={(e)=>handleOtherDetailsChange(idx-1, e)}/>
+        </Form.Item>
+      ),
+      photo : (
+        <Form.Item>
+          <Input name="photo" onChange={(e)=>handleProductFieldChange(idx-1, e)}/>
+        </Form.Item>
+      ),
+      pallets : (
+        <Form.Item>
+          <Input name="pallets" onChange={(e)=>handleOtherDetailsChange(idx-1, e)}/>
+        </Form.Item>
+      ),
+      pcsperbox : (
+        <Form.Item>
+          <Input name="pcsperbox" onChange={(e)=>handleOtherDetailsChange(idx-1, e)}/>
+        </Form.Item>
+      ),
+      brand : (
+        <Form.Item>
+          <Input name="brand" onChange={(e)=>handleOtherDetailsChange(idx-1, e)}/>
+        </Form.Item>
+      ),
+      grossweight : (
+        <Form.Item>
+          <Input name="grossweight" onChange={(e)=>handleOtherDetailsChange(idx-1, e)}/>
+        </Form.Item>
+      ),
+      totalamount : (
+        <Form.Item>
+          <Input name="price" onChange={(e)=>handleProductFieldChange(idx-1, e)}/>
+        </Form.Item>
+      )
+    }
+    const newRows = [...productRow, tempDataSource];
+    setProductRow(newRows);
+
+
+    const newProduct = {
+      serial_num:"",
+      product_name:"",
+      price:"",
+      quantity: "",
+      stauts:"",
+      photo:"",
+      other_details:{
+        packing:"",
+        box:"",
+        marksandnums:"",
+        sqm : "",
+        pricepersqm : "",
+        container : "",
+        pallets : "",
+        pcsperbox : "",
+        brand : "",
+        grossweight : ""
+      }
+    };
+    const updatedCreateOrderJSONData = { ...createOrderJSONData };
+    updatedCreateOrderJSONData.products.push(newProduct);
+    setCreateOrderJSONData(updatedCreateOrderJSONData);
+  }
+
+  const deleteProductBtn = () =>{
+    const newArray = productRow.slice(0, -1);
+    const updatedProducts = [...createOrderJSONData.products];
+    updatedProducts.pop();
+    const updatedCreateOrderJSONData = {
+      ...createOrderJSONData,
+      products: updatedProducts
+    };
+  
+    setCreateOrderJSONData(updatedCreateOrderJSONData);
+
+    setProductRow(newArray);
+  }
+
+
+  // const submitOrder = () => {
+  //   console.log(createOrderJSONData,"log")
+  // }
+
+  
+
 
   return (
     <>
       <PageHeader
         ghost
-        title="Edit Product"
-        buttons={[
-          <div key="1" className="page-header-actions">
-            <CalendarButtonPageHeader key="1" />
-            <ExportButtonPageHeader key="2" />
-            <ShareButtonPageHeader key="3" />
-            <Button size="small" key="4" type="primary">
-              <FeatherIcon icon="plus" size={14} />
-              Add New
-            </Button>
-          </div>,
-        ]}
+        title="Create a new Order"
       />
       <Main>
         <Row gutter={15}>
           <Col xs={24}>
             <Cards headless>
               <Row gutter={25} justify="center">
-                <Col xxl={12} md={14} sm={18} xs={24}>
+                <Col xxl={36} md={36} sm={36} xs={24}>
                   <AddProductForm>
-                    <Form style={{ width: '100%' }} form={form} name="editProduct" onFinish={handleSubmit}>
+                    <Form style={{ width: '100%' }} form={form} name="editProduct">
                       <BasicFormWrapper>
                         <div className="add-product-block">
                           <Row gutter={15}>
                             <Col xs={24}>
                               <div className="add-product-content">
-                                <Cards title="About Product">
-                                  <Form.Item name="name" initialValue="Red chair" label="Product Name">
-                                    <Input />
+                                <Cards title="Order Form">
+                                  <Form.Item label="Customer Name/Detail">
+                                    <Input name="customerName" onChange={handleNormalFieldChange}/>
                                   </Form.Item>
-                                  <Form.Item name="subtext" initialValue="Sub heading" label="Sub Text">
-                                    <Input />
+                                  <Form.Item label="Status">
+                                    <Input name="status" onChange={handleNormalFieldChange}/>
                                   </Form.Item>
-                                  <Form.Item name="category" initialValue="sunglasses" label="Category">
-                                    <Select style={{ width: '100%' }}>
-                                      <Option value="">Please Select</Option>
-                                      <Option value="wearingClothes">Wearing Clothes</Option>
-                                      <Option value="sunglasses">Sunglasses</Option>
-                                      <Option value="t-shirt">T-Shirt</Option>
-                                    </Select>
+                                  <Form.Item label="Invoice number">
+                                    <Input name="invoice_number" onChange={handleNormalFieldChange}/>
+                                  </Form.Item>
+                                  <Form.Item label="Order No">
+                                    <Input name="order_number" onChange={handleNormalFieldChange}/>
+                                  </Form.Item>
+                                  <Form.Item label="Date">
+                                    <Input name="date" onChange={handleNormalFieldChange}/>
+                                  </Form.Item>
+                                  <Form.Item label="Currency">
+                                    <Input name="currency" onChange={handleNormalFieldChange}/>
                                   </Form.Item>
 
-                                  <Form.Item name="price" initialValue="120" label="Price">
+                                  {/* <Form.Item name="price" initialValue="120" label="Price">
                                     <div className="input-prepend-wrap">
                                       <span className="input-prepend">
                                         <FeatherIcon icon="dollar-sign" size={14} />
@@ -121,36 +559,63 @@ function EditProduct() {
                                       </span>
                                       <InputNumber style={{ width: '100%' }} />
                                     </div>
-                                  </Form.Item>
+                                  </Form.Item> */}
 
-                                  <Form.Item name="status" initialValue="published" label="Status">
+                                  {/* <Form.Item name="status" initialValue="published" label="Status">
                                     <Radio.Group>
                                       <Radio value="published">Published</Radio>
                                       <Radio value="draft">Draft</Radio>
                                     </Radio.Group>
-                                  </Form.Item>
+                                  </Form.Item> */}
 
-                                  <Form.Item
+                                  {/* <Form.Item
                                     name="description"
                                     initialValue="lorem ipsum dolor sit amit"
                                     label="Product Description"
                                   >
                                     <Input.TextArea rows={5} />
+                                  </Form.Item> */}
+                                </Cards>
+                              </div>
+                              <div className="add-product-content" style={{marginTop:"2rem"}}>
+                                <Cards title="Product Detail">
+                                <Row gutter={15}>
+                                  <Col md={24}>
+                                    <TableWrapper className="table-order table-responsive">
+                                      <Table
+                                        dataSource={productRow}
+                                        columns={columns}
+                                      />
+                                    </TableWrapper>
+                                  </Col>
+                                </Row>
+                                <Button size="small" htmlType="submit" type="primary" raised onClick={addProductBtn}>
+                                      Add Another Product
+                                    </Button>
+                                    {productRow.length>=2?(
+                                      <Button size="small" htmlType="submit" type="secondary" raised onClick={deleteProductBtn} style={{marginLeft:"2rem"}}>Delete
+                                      </Button>
+                                    ):null}
+                                </Cards>
+                              </div>
+                              <div className="add-product-content" style={{marginTop:"2rem"}}>
+                                <Cards title="">
+                                  <Form.Item
+                                    label="Terms and Conditions"
+                                  >
+                                    <Input.TextArea rows={5} name="terms_and_conditions" onChange={handleNormalFieldChange}/>
                                   </Form.Item>
-
-                                  <Form.Item name="mTitle" initialValue="Meta title" label="Meta Title">
-                                    <Input />
-                                  </Form.Item>
-
-                                  <Form.Item name="mKeyword" initialValue="Meta keyword" label="Meta Keyword">
-                                    <Input />
+                                  <Form.Item
+                                    label="Remarks"
+                                  >
+                                    <Input.TextArea rows={5} name="customer_notes" onChange={handleNormalFieldChange}/>
                                   </Form.Item>
                                 </Cards>
                               </div>
                             </Col>
                           </Row>
                         </div>
-                        <div className="add-product-block">
+                        {/* <div className="add-product-block">
                           <Row gutter={15}>
                             <Col xs={24}>
                               <div className="add-product-content">
@@ -168,20 +633,17 @@ function EditProduct() {
                               </div>
                             </Col>
                           </Row>
-                        </div>
+                        </div> */}
                         <div className="add-form-action">
                           <Form.Item>
                             <Button
                               className="btn-cancel"
                               size="large"
-                              onClick={() => {
-                                return form.resetFields();
-                              }}
                             >
-                              Cancel
+                              Save Draft
                             </Button>
-                            <Button size="large" htmlType="submit" type="primary" raised>
-                              Save Product
+                            <Button size="large" htmlType="submit" type="primary" raised onClick={handleSubmit}>
+                              Save Order
                             </Button>
                           </Form.Item>
                         </div>

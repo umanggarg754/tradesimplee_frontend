@@ -101,8 +101,10 @@ function SignUp() {
               }
               const response = await createUserAPI(params)
               console.log(response);
-              if(response?.status===201){
+              if(response?.status===200){
                 toast.success('SignUp Successfull 🥳',{...toastStyle.success})
+                const tokenFromServer = response.data.token;
+                localStorage.setItem('loginToken', tokenFromServer);
                 // dispatch(login());
                 history.push('/company-register');
               }else{

@@ -105,6 +105,10 @@ function SignIn() {
               if(response?.status===200){
                 toast.success('Login Successfully 🥳',{...toastStyle.success})
                 dispatch(login());
+
+                const tokenFromServer = response.data.token;
+                localStorage.setItem('loginToken', tokenFromServer);
+
                 history.push('/admin/contact/list');
               }else{
                 toast.error('Invalid Email or Password 😞',{...toastStyle.error})

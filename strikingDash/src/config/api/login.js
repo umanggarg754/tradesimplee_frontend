@@ -33,14 +33,17 @@ export const createUserAPI = async (params) => {
   }
 };
 
-export const createCompanyAPI = async (params) => {
+export const createCompanyAPI = async (params, token) => {
   const baseURL = config.API_URL;
-  const path = `/api/company/createCompany`;
+  const path = '/api/company/createCompany';
 
-  console.log(params);
 
   try {
-    const response = await axios.post(`${baseURL + path}`, params);
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+
+    const response = await axios.post(`${baseURL + path}`, params, { headers });
     console.log(response);
     return { status: response.status, data: response.data };
   } catch (error) {

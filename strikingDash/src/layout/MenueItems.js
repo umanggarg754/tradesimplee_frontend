@@ -7,7 +7,7 @@ import propTypes from 'prop-types';
 // import { NavTitle } from './style';
 // import versions from '../demoData/changelog.json';
 
-// const { SubMenu } = Menu;
+const { SubMenu } = Menu;
 
 // function MenuItems({ darkMode, toggleCollapsed, topMenu, events }) {
 function MenuItems({ darkMode, toggleCollapsed, topMenu }) {
@@ -64,43 +64,19 @@ function MenuItems({ darkMode, toggleCollapsed, topMenu }) {
           Contact
         </NavLink>
       </Menu.Item>
-      <Menu.Item
-        icon={
-          !topMenu && (
-            <NavLink className="menuItem-iocn" to={`${path}/ecommerce/orders`}>
-              <FeatherIcon icon="shopping-cart" />
-            </NavLink>
-          )
-        }
-        key="orders"
-      >
-        <NavLink onClick={toggleCollapsed} to={`${path}/ecommerce/orders`}>
-          Orders
-        </NavLink>
-      </Menu.Item>
 
-      {/* <SubMenu key="project" icon={!topMenu && <FeatherIcon icon="target" />} title="Project">
+      <SubMenu key="project" icon={!topMenu && <FeatherIcon icon="target" />} title="Orders">
         <Menu.Item key="view">
-          <NavLink onClick={toggleCollapsed} to={`${path}/project/view/grid`}>
-            Project Grid
+          <NavLink onClick={toggleCollapsed} to={`${path}/ecommerce/orders`}>
+            All Orders
           </NavLink>
         </Menu.Item>
         <Menu.Item key="views">
-          <NavLink onClick={toggleCollapsed} to={`${path}/project/view/list`}>
-            Project List
+          <NavLink onClick={toggleCollapsed} to={`${path}/ecommerce/edit-product`}>
+            Create Order
           </NavLink>
         </Menu.Item>
-        <Menu.Item key="ProjectCreate">
-          <NavLink onClick={toggleCollapsed} to={`${path}/project/create`}>
-            Create Project
-          </NavLink>
-        </Menu.Item>
-        <Menu.Item key="projectDetails">
-          <NavLink onClick={toggleCollapsed} to={`${path}/project/projectDetails/1`}>
-            Project Details
-          </NavLink>
-        </Menu.Item>
-      </SubMenu> */}
+      </SubMenu>
 
       {/* {!topMenu && <NavTitle className="sidebar-nav-title">CRUD</NavTitle>} */}
 

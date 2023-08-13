@@ -93,7 +93,8 @@ function CompanyRegister() {
                 address : state.address,
                 city : state.city,
               }
-              const response = await createCompanyAPI(params)
+              const token = localStorage.getItem("loginToken")
+              const response = await createCompanyAPI(params, token)
               console.log(response);
               if(response?.status===201){
                 toast.success('SignUp Successfull 🥳',{...toastStyle.success})
