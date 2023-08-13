@@ -11,7 +11,6 @@ export const createOrderAPI = async (params, token) => {
       "Content-Type": "multipart/form-data"
     };
 
-    console.log(params)
 
     const response = await axios.post(`${baseURL + path}`, params, { headers});
     console.log(response);

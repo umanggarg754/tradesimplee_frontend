@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { Row, Col, Form, Input, Table } from 'antd';
 // import FeatherIcon from 'feather-icons-react';
+import toast from 'react-hot-toast';
 import { PageHeader } from '../../../components/page-headers/page-headers';
 import { Cards } from '../../../components/cards/frame/cards-frame';
 import { Main, BasicFormWrapper, TableWrapper } from '../../styled';
 import { Button } from '../../../components/buttons/buttons';
 import { AddProductForm } from '../Style';
 import { createOrderAPI } from '../../../config/api/orders';
+import { toastStyle } from '../../../utility/helper';
 // import Heading from '../../../components/heading/heading';
 // import { ShareButtonPageHeader } from '../../../components/buttons/share-button/share-button';
 // import { ExportButtonPageHeader } from '../../../components/buttons/export-button/export-button';
@@ -35,12 +37,13 @@ function EditProduct() {
 
   // const fileUploadProps = {
   //   name: 'file',
-  //   multiple: true,
+  //   multiple: false,
   //   action: 'https://www.mocky.io/v2/5cc8019d300000980a055e76',
   //   onChange(info) {
   //     const { status } = info.file;
   //     if (status !== 'uploading') {
-  //       setState({ ...state, file: info.file, list: info.fileList });
+  //       // setState({ ...state, file: info.file, list: info.fileList });
+  //       console.log(info.file)
   //     }
   //     if (status === 'done') {
   //       message.success(`${info.file.name} file uploaded successfully.`);
@@ -140,10 +143,8 @@ function EditProduct() {
   //   setState({ ...state, submitValues: values });
   // };
 const generateFormData = (data) => {
-
-  console.log(data);
   const formData = new FormData();
-
+  console.log(typeof data.products[0].photo === "object")
   Object.keys(data).forEach((key) => {
     if (Array.isArray(data[key])) {
       data[key].forEach((item, index) => {
@@ -151,10 +152,11 @@ const generateFormData = (data) => {
           Object.keys(item).forEach((subKey) => {
             const subItem = item[subKey];
             if (typeof subItem === "object") {
-              Object.keys(subItem).forEach((subSubKey) => {
-                const value = subItem[subSubKey];
-                formData.append(`${key}[${index}][${subKey}][${subSubKey}]`, value);
-              });
+              // Object.keys(subItem).forEach((subSubKey) => {
+              //   const value = subItem[subSubKey];
+              //   formData.append(`${key}[${index}][${subKey}][${subSubKey}]`, value);
+              // });
+              formData.append(`${key}[${index}][${subKey}]`, subItem);
             } else {
               formData.append(`${key}[${index}][${subKey}]`, subItem);
             }
@@ -173,7 +175,7 @@ const generateFormData = (data) => {
     }
   });
 
-  console.log(JSON.stringify(formData))
+  
 
   return formData;
 };
@@ -200,18 +202,6 @@ const generateFormData = (data) => {
       quantity: "",
       stauts:"",
       photo:"",
-      // other_details:{
-      //   packing:"",
-      //   box:"",
-      //   marksandnums:"",
-      //   sqm : "",
-      //   pricepersqm : "",
-      //   container : "",
-      //   pallets : "",
-      //   pcsperbox : "",
-      //   brand : "",
-      //   grossweight : ""
-      // }
     }]
   })
 
@@ -242,26 +232,25 @@ const generateFormData = (data) => {
     });
   };
 
-  // const handleOtherDetailsChange = (productIndex, e) => {
-  //   const { name, value } = e.target;
+  const handleProductFieldPhotoChange = (index, e) => {
+    setCreateOrderJSONData(prevData => {
+      const updatedProducts = [...prevData.products];
+      updatedProducts[index] = {
+        ...updatedProducts[index],
+        "serial_num": index+1
+      };
+      updatedProducts[index] = {
+        ...updatedProducts[index],
+        [e.target.name]: e.target.files[0]
+      };
   
-  //   setCreateOrderJSONData(prevData => {
-  //     const updatedProducts = [...prevData.products];
-  //     const updatedProduct = { ...updatedProducts[productIndex] };
-  //     const updatedOtherDetails = {
-  //       ...updatedProduct.other_details,
-  //       [name]: value
-  //     };
-  
-  //     updatedProduct.other_details = updatedOtherDetails;
-  //     updatedProducts[productIndex] = updatedProduct;
-  
-  //     return {
-  //       ...prevData,
-  //       products: updatedProducts
-  //     };
-  //   });
-  // };
+      return {
+        ...prevData,
+        products: updatedProducts
+      };
+    });
+  };
+
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -280,12 +269,15 @@ const generateFormData = (data) => {
       if (response.status===201) {
         // Handle success
         console.log('Order created successfully');
+        toast.success('Order Created Successfully 🥳',{...toastStyle.success})
       } else {
         // Handle error
         console.error('Error creating order');
+        toast.error('Something Bad happened',{...toastStyle.error})
       }
     } catch (error) {
       console.error('Error:', error);
+      toast.error('Something Bad happened',{...toastStyle.error})
     }
   };
   
@@ -341,7 +333,7 @@ const generateFormData = (data) => {
       ),
       photo : (
         <Form.Item>
-          <Input name="photo" onChange={(e)=>handleProductFieldChange(0, e)}/>
+          <input type="file" name="photo" onChange={(e)=>handleProductFieldPhotoChange(0, e)}/>
         </Form.Item>
       ),
       pallets : (
@@ -428,7 +420,7 @@ const generateFormData = (data) => {
       ),
       photo : (
         <Form.Item>
-          <Input name="photo" onChange={(e)=>handleProductFieldChange(idx-1, e)}/>
+          <input type="file" name="photo" onChange={(e)=>handleProductFieldPhotoChange(idx-1, e)}/>
         </Form.Item>
       ),
       pallets : (
