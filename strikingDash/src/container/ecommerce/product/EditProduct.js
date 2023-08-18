@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Row, Col, Form, Input, Table } from 'antd';
+import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 // import FeatherIcon from 'feather-icons-react';
 import toast from 'react-hot-toast';
 import { PageHeader } from '../../../components/page-headers/page-headers';
@@ -19,6 +20,7 @@ import { toastStyle } from '../../../utility/helper';
 
 function EditProduct() {
   const [form] = Form.useForm();
+  const history = useHistory();
   // const [state, setState] = useState({
   //   file: null,
   //   list: null,
@@ -270,6 +272,27 @@ const generateFormData = (data) => {
         // Handle success
         console.log('Order created successfully');
         toast.success('Order Created Successfully 🥳',{...toastStyle.success})
+        const initialOrderData = {
+          customerName: "",
+          status: "",
+          invoice_number: "",
+          order_number: "",
+          date: "",
+          currency: "",
+          terms_and_conditions: "",
+          customer_notes: "",
+          products: [{
+            serial_num: "",
+            product_name: "",
+            price: "",
+            quantity: "",
+            status: "",
+            photo: ""
+          }]
+        }
+      
+          setCreateOrderJSONData(initialOrderData);
+
       } else {
         // Handle error
         console.error('Error creating order');
@@ -635,8 +658,11 @@ const generateFormData = (data) => {
                             <Button
                               className="btn-cancel"
                               size="large"
+                              onClick={()=>{
+                                history.push('/admin/ecommerce/invoice')
+                              }}
                             >
-                              Save Draft
+                              Generate Proforma
                             </Button>
                             <Button size="large" htmlType="submit" type="primary" raised onClick={handleSubmit}>
                               Save Order

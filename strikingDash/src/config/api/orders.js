@@ -20,6 +20,24 @@ export const createOrderAPI = async (params, token) => {
   }
 };
 
+export const getProformaDetailsAPI = async (orderNo, token) => {
+  const baseURL = config.API_URL;
+  const path = '/api/order/createPerforma/';
+
+  try {
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+
+
+    const response = await axios.get(`${baseURL + path + orderNo}`, { headers});
+    console.log(response);
+    return { status: response.status, data: response.data };
+  } catch (error) {
+    console.log(error);
+  }
+};
+
   export const editOrders = async (params) => {
     const baseURL = config.API_URL;
     const path = `/api/order/editOrder`;
