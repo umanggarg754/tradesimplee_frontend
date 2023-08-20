@@ -4,7 +4,7 @@ import FeatherIcon from 'feather-icons-react';
 import { useSelector } from 'react-redux';
 import ReactToPrint from "react-to-print";
 import { useLocation } from 'react-router-dom';
-import { InvoiceHeader, InvoiceLetterBox, InvoiceAction, ProductTable, OrderSummary } from './Style';
+import { InvoiceHeader, InvoiceAction, ProductTable, OrderSummary } from './Style';
 import { PageHeader } from '../../components/page-headers/page-headers';
 import { Main } from '../styled';
 import { Cards } from '../../components/cards/frame/cards-frame';
@@ -13,19 +13,18 @@ import { Button } from '../../components/buttons/buttons';
 // import { ShareButtonPageHeader } from '../../components/buttons/share-button/share-button';
 // import { ExportButtonPageHeader } from '../../components/buttons/export-button/export-button';
 // import { CalendarButtonPageHeader } from '../../components/buttons/calendar-button/calendar-button';
-import { getProformaDetailsAPI } from '../../config/api/orders';
+import { getDesignListAPI } from '../../config/api/orders';
 
-function Invoice() {
-
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const id = queryParams.get('id');
-
+function DesignList() {
   const { rtl } = useSelector((state) => {
     return {
       rtl: state.ChangeLayoutMode.rtlData,
     };
   });
+
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const id = queryParams.get('id');
 
   let componentRef = useRef();
 
@@ -41,14 +40,29 @@ function Invoice() {
       key: 'details',
     },
     {
-      title: 'Packing',
-      dataIndex: 'packing',
-      key: 'packing',
+      title: 'Container',
+      dataIndex: 'container',
+      key: 'container',
     },
     {
-      title: 'Box',
-      dataIndex: 'box',
-      key: 'box',
+      title: 'Design Photo',
+      dataIndex: 'photo',
+      key: 'photo',
+    },
+    {
+      title: 'Pallets',
+      dataIndex: 'pallets',
+      key: 'pallets',
+    },
+    {
+      title: 'Boxes',
+      dataIndex: 'boxes',
+      key: 'boxes',
+    },
+    {
+      title: 'Pieces Per Box',
+      dataIndex: 'piecesperbox',
+      key: 'piecesperbox',
     },
     {
       title: 'SQM',
@@ -56,14 +70,9 @@ function Invoice() {
       key: 'sqm',
     },
     {
-      title: 'Price per SQM',
-      dataIndex: 'pricepersqm',
-      key: 'pricepersqm',
-    },
-    {
-      title: 'Total Amount',
-      dataIndex: 'totalAmount',
-      key: 'totalAmount',
+      title: 'Gross Weight',
+      dataIndex: 'grossweight',
+      key: 'grossweight',
     },
   ];
 
@@ -85,7 +94,7 @@ function Invoice() {
             <Heading className="product-info-title" as="h6">
               {product.product_name}
             </Heading>
-            <ul className="info-list">
+            {/* <ul className="info-list">
               <li>
                 <span className="info-title">Type 2</span>
                 <span>600 X 1200 MM EACH BOX 2 PCS & 1.44 SQ-M</span>
@@ -95,15 +104,18 @@ function Invoice() {
                 <span className="info-title"> Type 1</span>
                 <span>60X1200 : 31 PALLET - 992 BOX - 32 BOX PER PALLET</span>
               </li>
-            </ul>
+            </ul> */}
           </div>
         </>
       ),
-      packing: <span>{product.packing}</span>,
-      box: <span>{product.box}</span>,
+      container: <span>{product.container}</span>,
+      photo: <img src={`http://localhost:8080/assets/${product.photo}`} alt="disign-photo" style={{width:"150px", height:"150px"}}/>,
+      pallets: <span>{product.pallets}</span>,
+    //   boxes: <span>{product.box}</span>,
+      piecesperbox: <span>{product.pcsperbox}</span>,
       sqm: <span>{product.sqm}</span>,
-      pricepersqm: <span>{product.pricepersqm}</span>,
-      totalAmount: <span>{parseFloat(product.sqm) * parseFloat(product.pricepersqm)}</span>,
+      grossweight: <span>{product.grossweight}</span>
+    //   totalAmount: <span>{parseFloat(product.sqm) * parseFloat(product.pricepersqm)}</span>,
     }));
     console.log(invoiceTableData);
     return invoiceTableData;
@@ -113,7 +125,7 @@ function Invoice() {
     const fetchData = async () => {
       try {
         const token = localStorage.getItem('loginToken');
-        const response = await getProformaDetailsAPI(id, token);
+        const response = await getDesignListAPI(id, token);
         console.log(response);
         setProformaData(response.data);
         // setLoading(false);
@@ -209,16 +221,13 @@ function Invoice() {
                           {/* Admin Company <br />
                           795 Folsom Ave, Suite 600 <br />
                           San Francisco, CA 94107, USA <br /> */}
-                          Date: {proformaData?.order_details?.date} <br />
-                          Order No.: {proformaData?.order_details?.order_number} <br />
-                          Invoice No.: {proformaData?.order_details?.invoice_number} <br />
-                          IEC No.: {proformaData?.company_details?.ic_number} <br />
+                          DESIGN LIST
                         </address>
                       </div>
                     </Col>
                   </Row>
                 </InvoiceHeader>
-                <InvoiceLetterBox>
+                {/* <InvoiceLetterBox>
                   <div className="invoice-letter-inner">
                     <address>
                       <Heading className="invoice-customer__title" as="h5">
@@ -232,8 +241,8 @@ function Invoice() {
                     </address>
                     <div className="invoice-barcode">
                       <Cards headless>
-                        {/* <img style={{ width: '100%' }} src={require('../../static/img/barcode.png')} alt="barcode" />
-                        <p>8364297359912267</p> */}
+                        <img style={{ width: '100%' }} src={require('../../static/img/barcode.png')} alt="barcode" />
+                        <p>8364297359912267</p>
                       </Cards>
                     </div>
                     <address>
@@ -245,7 +254,7 @@ function Invoice() {
                       </p>
                     </address>
                   </div>
-                </InvoiceLetterBox>
+                </InvoiceLetterBox> */}
 
                 <br />
                 <br />
@@ -320,4 +329,4 @@ function Invoice() {
   );
 }
 
-export default Invoice;
+export default DesignList;

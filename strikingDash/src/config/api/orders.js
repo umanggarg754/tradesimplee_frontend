@@ -20,6 +20,61 @@ export const createOrderAPI = async (params, token) => {
   }
 };
 
+export const getOrderListAPI = async (token) => {
+  const baseURL = config.API_URL;
+  const path = '/api/order/getUserOrders';
+
+  try {
+    const headers = {
+      Authorization: `Bearer ${token}`
+    };
+
+
+    const response = await axios.get(`${baseURL + path}`, { headers});
+    console.log(response);
+    return { status: response.status, data: response.data };
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getOrderByIdAPI = async (id, token) => {
+  const baseURL = config.API_URL;
+  const path = '/api/order/getOrder/';
+
+  try {
+    const headers = {
+      Authorization: `Bearer ${token}`
+    };
+
+
+    const response = await axios.get(`${baseURL + path + id}`, { headers});
+    console.log(response);
+    return { status: response.status, data: response.data };
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const editOrderAPI = async (id, params, token) => {
+  const baseURL = config.API_URL;
+  const path = '/api/order/editOrder/';
+
+  try {
+    const headers = {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "multipart/form-data"
+    };
+
+
+    const response = await axios.put(`${baseURL + path + id}`, params, { headers});
+    console.log(response);
+    return { status: response.status, data: response.data };
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export const getProformaDetailsAPI = async (orderNo, token) => {
   const baseURL = config.API_URL;
   const path = '/api/order/createPerforma/';
@@ -38,17 +93,20 @@ export const getProformaDetailsAPI = async (orderNo, token) => {
   }
 };
 
-  export const editOrders = async (params) => {
-    const baseURL = config.API_URL;
-    const path = `/api/order/editOrder`;
+export const getDesignListAPI = async (orderNo, token) => {
+  const baseURL = config.API_URL;
+  const path = '/api/order/createDesignList/';
 
-    console.log(params)
-  
-    try {
-      const response = await axios.post(`${baseURL + path}`, params);
-      console.log(response);
-      return response;
-    } catch (error) {
-      console.log(error.response);
-    }
-  };
+  try {
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+
+
+    const response = await axios.get(`${baseURL + path + orderNo}`, { headers});
+    console.log(response);
+    return { status: response.status, data: response.data };
+  } catch (error) {
+    console.log(error);
+  }
+};

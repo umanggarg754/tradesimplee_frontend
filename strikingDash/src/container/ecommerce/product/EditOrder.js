@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Form, Input, Select, Table } from 'antd';
+import { Row, Col, Form, Input, Table, Select } from 'antd';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 // import FeatherIcon from 'feather-icons-react';
 import toast from 'react-hot-toast';
+import { useLocation } from 'react-router-dom';
 import { PageHeader } from '../../../components/page-headers/page-headers';
 import { Cards } from '../../../components/cards/frame/cards-frame';
 import { Main, BasicFormWrapper, TableWrapper } from '../../styled';
 import { Button } from '../../../components/buttons/buttons';
 import { AddProductForm } from '../Style';
-import { createOrderAPI } from '../../../config/api/orders';
+import { editOrderAPI, getOrderByIdAPI } from '../../../config/api/orders';
 import { getContactAPI } from '../../../config/api/company';
 import { toastStyle } from '../../../utility/helper';
 // import Heading from '../../../components/heading/heading';
@@ -19,48 +20,15 @@ import { toastStyle } from '../../../utility/helper';
 const { Option } = Select;
 // const { Dragger } = Upload;
 
-function EditProduct() {
+function EditOrder() {
+    // Edit your Order
   const [form] = Form.useForm();
   const history = useHistory();
-  // const [state, setState] = useState({
-  //   file: null,
-  //   list: null,
-  //   submitValues: {},
-  // });
 
-  // const fileList = [
-  //   {
-  //     uid: '1',
-  //     name: 'xxx.png',
-  //     status: 'done',
-  //     url: require('../../../static/img/products/1.png'),
-  //     thumbUrl: require('../../../static/img/products/1.png'),
-  //   },
-  // ];
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const id = queryParams.get('id');
 
-  // const fileUploadProps = {
-  //   name: 'file',
-  //   multiple: false,
-  //   action: 'https://www.mocky.io/v2/5cc8019d300000980a055e76',
-  //   onChange(info) {
-  //     const { status } = info.file;
-  //     if (status !== 'uploading') {
-  //       // setState({ ...state, file: info.file, list: info.fileList });
-  //       console.log(info.file)
-  //     }
-  //     if (status === 'done') {
-  //       message.success(`${info.file.name} file uploaded successfully.`);
-  //     } else if (status === 'error') {
-  //       message.error(`${info.file.name} file upload failed.`);
-  //     }
-  //   },
-  //   listType: 'picture',
-  //   defaultFileList: fileList,
-  //   showUploadList: {
-  //     showRemoveIcon: true,
-  //     removeIcon: <FeatherIcon icon="trash-2" onClick={e => console.log(e, 'custom removeIcon event')} />,
-  //   },
-  // };
 
   const columns = [
     {
@@ -213,6 +181,7 @@ const generateFormData = (data) => {
       ...prevData,
       [e.target.name]: e.target.value
     }));
+    console.log(createOrderJSONData)
   };
   
 
@@ -265,7 +234,7 @@ const generateFormData = (data) => {
 
     try {
       const token = localStorage.getItem("loginToken")
-      const response = await createOrderAPI(formData, token);
+      const response = await editOrderAPI(id, formData, token);
 
 
       console.log(response)
@@ -523,6 +492,27 @@ const generateFormData = (data) => {
   //   console.log(createOrderJSONData,"log")
   // }
 
+  let tempOrderDetails = {}
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = localStorage.getItem('loginToken');
+        const response = await getOrderByIdAPI(id, token);
+        console.log(response);
+        tempOrderDetails=response.data
+        // setTempOrderDetails(response.data);
+        // setLoading(false);
+      } catch (error) {
+        console.log(error.message);
+        // setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   const [customerDetail, setCustomerDetail] = useState([])
 
   useEffect(() => {
@@ -549,7 +539,7 @@ const generateFormData = (data) => {
     <>
       <PageHeader
         ghost
-        title="Create a new Order"
+        title="Edit your Order"
       />
       <Main>
         <Row gutter={15}>
@@ -579,7 +569,7 @@ const generateFormData = (data) => {
                                     </Select>
                                   </Form.Item>
                                   <Form.Item label="Status">
-                                    <Input name="status" onChange={handleNormalFieldChange}/>
+                                    <Input name="status" defaultValue={tempOrderDetails?.status} onChange={handleNormalFieldChange}/>
                                   </Form.Item>
                                   <Form.Item label="Invoice number">
                                     <Input name="invoice_number" onChange={handleNormalFieldChange}/>
@@ -714,4 +704,4 @@ const generateFormData = (data) => {
   );
 }
 
-export default EditProduct;
+export default EditOrder;

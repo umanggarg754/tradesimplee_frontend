@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 import { Row, Col, Table } from 'antd';
 import FeatherIcon from 'feather-icons-react';
 import { TopToolBox } from './Style';
@@ -13,8 +14,10 @@ import { Cards } from '../../components/cards/frame/cards-frame';
 // import { ShareButtonPageHeader } from '../../components/buttons/share-button/share-button';
 // import { ExportButtonPageHeader } from '../../components/buttons/export-button/export-button';
 // import { CalendarButtonPageHeader } from '../../components/buttons/calendar-button/calendar-button';
+import { getOrderListAPI } from '../../config/api/orders';
 
 function Orders() {
+  const history = useHistory();
   // const dispatch = useDispatch();
   const { searchData, orders } = useSelector(state => {
     return {
@@ -31,6 +34,27 @@ function Orders() {
 
   const { notData, selectedRowKeys } = state;
   // const filterKey = ['Shipped', 'Awaiting Shipment', 'Canceled'];
+
+  const [orderList, setOrderList] = useState([]);
+
+
+  useEffect(()=>{
+    const fetchData = async () => {
+      try {
+        const token = localStorage.getItem("loginToken")
+        const response = await getOrderListAPI(token);
+        console.log(response)
+        setOrderList(response.data);
+        // setLoading(false);
+      } catch (error) {
+        console.log(error.message);
+        // setLoading(false);
+      }
+    };
+
+    fetchData();
+
+  },[])
 
   useEffect(() => {
     if (orders) {
@@ -54,13 +78,13 @@ function Orders() {
   // };
 
   const dataSource = [];
-  if (orders.length) {
-    orders.map((value, key) => {
-      const { status, orderId, customers, amount, date } = value;
+  if (orderList.length) {
+    orderList.map((value, key) => {
+      const { status, amount, date } = value;
       return dataSource.push({
         key: key + 1,
-        id: <span className="order-id">{orderId}</span>,
-        customer: <span className="customer-name">{customers}</span>,
+        id: <span className="order-id">{value.order_number}</span>,
+        customer: <span className="customer-name">{value.contact_name}</span>,
         status: (
           <span
             className={`status ${
@@ -75,14 +99,14 @@ function Orders() {
         action: (
           <div className="table-actions">
             <>
-              <Button className="btn-icon" type="primary" to="#" shape="circle">
+              {/* <Button className="btn-icon" type="primary" shape="circle" onClick={()=>history.push(`/admin/ecommerce/edit-order?id=${value.id}`)}>
                 <FeatherIcon icon="eye" size={16} />
-              </Button>
-              <Button className="btn-icon" type="info" to="#" shape="circle">
+              </Button> */}
+              <Button className="btn-icon" type="info" to="#" shape="circle" onClick={()=>history.push(`/admin/ecommerce/invoice?id=${value.id}`)}>
                 <FeatherIcon icon="edit" size={16} />
               </Button>
-              <Button className="btn-icon" type="danger" to="#" shape="circle">
-                <FeatherIcon icon="trash-2" size={16} />
+              <Button className="btn-icon" type="danger" to="#" shape="circle" onClick={()=>history.push(`/admin/ecommerce/design-list?id=${value.id}`)}>
+                <FeatherIcon icon="list" size={16} />
               </Button>
             </>
           </div>
