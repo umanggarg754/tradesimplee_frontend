@@ -110,3 +110,21 @@ export const getDesignListAPI = async (orderNo, token) => {
     console.log(error);
   }
 };
+
+export const getCurrencyListAPI = async (token) => {
+  const baseURL = config.API_URL;
+  const path = '/api/order/getCurrency';
+
+  try {
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+
+
+    const response = await axios.get(`${baseURL + path}`, { headers});
+    console.log(response);
+    return { status: response.status, data: response.data };
+  } catch (error) {
+    console.log(error);
+  }
+};

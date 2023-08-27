@@ -120,8 +120,8 @@ function ContactTable() {
     linkedin:"", 
     email:"", 
     phone:"", 
-    whatsapp:"", 
-    summary:"",
+    // whatsapp:"", 
+    // summary:"",
     background:"",
     status:"",
     country:"",
@@ -136,8 +136,8 @@ function ContactTable() {
     linkedin:"", 
     email:"", 
     phone:"", 
-    whatsapp:"", 
-    summary:"",
+    // whatsapp:"", 
+    // summary:"",
     background:"",
     status:"",
     country:"",
@@ -161,8 +161,8 @@ function ContactTable() {
       linkedin: addNewContanct.linkedin, 
       email: addNewContanct.email, 
       phone: addNewContanct.phone, 
-      whatsapp: addNewContanct.whatsapp, 
-      summary: addNewContanct.summary,
+      // whatsapp: addNewContanct.whatsapp, 
+      // summary: addNewContanct.summary,
       background: addNewContanct.background,
       status: addNewContanct.status,
       country: addNewContanct.country,
@@ -183,8 +183,8 @@ function ContactTable() {
         linkedin:"", 
         email:"", 
         phone:"", 
-        whatsapp:"", 
-        summary:"",
+        // whatsapp:"", 
+        // summary:"",
         background:"",
         status:"",
         country:"",
@@ -436,13 +436,13 @@ function ContactTable() {
                     <Input name="phone" placeholder="+91 972546 5236" onChange={handleChangeAddNew}/>
                   </Form.Item>
 
-                  <Form.Item label="WhatsApp Number">
+                  {/* <Form.Item label="WhatsApp Number">
                     <Input name="whatsapp" placeholder="+91 972546 5236" onChange={handleChangeAddNew}/>
-                  </Form.Item>
+                  </Form.Item> */}
 
-                  <Form.Item label="Summary">
+                  {/* <Form.Item label="Summary">
                     <Input name="summary" placeholder="Input Summary" onChange={handleChangeAddNew} />
-                  </Form.Item>
+                  </Form.Item> */}
 
                   <Form.Item label="Background">
                     <Input name="background" placeholder="Background" onChange={handleChangeAddNew}/>
@@ -507,13 +507,13 @@ function ContactTable() {
                     <Input name="phone" defaultValue={update.phone} onChange={handleChangeEdit}/>
                   </Form.Item>
 
-                  <Form.Item label="WhatsApp Number">
+                  {/* <Form.Item label="WhatsApp Number">
                     <Input name="whatsapp" defaultValue={update.whatsapp} onChange={handleChangeEdit}/>
                   </Form.Item>
 
                   <Form.Item label="Summary">
                     <Input name="summary" defaultValue={update.summary} onChange={handleChangeEdit} />
-                  </Form.Item>
+                  </Form.Item> */}
 
                   <Form.Item label="Background">
                     <Input name="background" defaultValue={update.background} onChange={handleChangeEdit}/>

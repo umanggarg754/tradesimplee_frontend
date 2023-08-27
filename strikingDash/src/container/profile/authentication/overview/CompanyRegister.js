@@ -23,6 +23,7 @@ function CompanyRegister() {
     pan : "",
     address : "",
     city : "",
+    bank_details : ""
   });
 
   const handleChange = (e) => {
@@ -76,6 +77,12 @@ function CompanyRegister() {
           >
             <Input name="city" onChange={handleChange}/>
           </Form.Item>
+          <Form.Item
+            label="Bank Details"
+            rules={[{ required: true, message: 'Please input your bank details!'}]}
+          >
+            <Input name="bank_details" onChange={handleChange}/>
+          </Form.Item>
           
           <div className="auth-form-action">
             <Checkbox onChange={onChange} checked={state.checked}>
@@ -92,6 +99,7 @@ function CompanyRegister() {
                 pan : state.pan,
                 address : state.address,
                 city : state.city,
+                bank_details : state.bank_details
               }
               const token = localStorage.getItem("loginToken")
               const response = await createCompanyAPI(params, token)
@@ -104,7 +112,7 @@ function CompanyRegister() {
                 toast.error('Please try again 😞',{...toastStyle.error})
               }
             }}>
-              Create Account
+              Add Company
             </Button>
           </Form.Item>
           {/* <p className="form-divider">

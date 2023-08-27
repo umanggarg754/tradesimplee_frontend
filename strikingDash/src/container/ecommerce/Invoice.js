@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Row, Col, Table } from 'antd';
+import { Row, Col, Table, Form, Input } from 'antd';
 import FeatherIcon from 'feather-icons-react';
 import { useSelector } from 'react-redux';
-import ReactToPrint from "react-to-print";
+import ReactToPrint from 'react-to-print';
 import { useLocation } from 'react-router-dom';
 import { InvoiceHeader, InvoiceLetterBox, InvoiceAction, ProductTable, OrderSummary } from './Style';
 import { PageHeader } from '../../components/page-headers/page-headers';
@@ -16,7 +16,6 @@ import { Button } from '../../components/buttons/buttons';
 import { getProformaDetailsAPI } from '../../config/api/orders';
 
 function Invoice() {
-
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const id = queryParams.get('id');
@@ -240,9 +239,7 @@ function Invoice() {
                       <Heading className="invoice-customer__title" as="h5">
                         Bank Details:
                       </Heading>
-                      <p>
-                        {proformaData?.company_details?.bank_details}
-                      </p>
+                      <p>{proformaData?.company_details?.bank_details}</p>
                     </address>
                   </div>
                 </InvoiceLetterBox>
@@ -285,6 +282,16 @@ function Invoice() {
                     </OrderSummary>
                   </Col>
                 </Row>
+                  <Cards title="Other Details">
+                  <p>Terms and Conditions</p>
+                  <Form.Item label="">
+                    <Input.TextArea rows={5} name="terms_and_conditions" />
+                  </Form.Item>
+                  <p>Remarks</p>
+                  <Form.Item label="">
+                    <Input.TextArea rows={5} name="customer_notes" />
+                  </Form.Item>
+                </Cards>
                 <Row justify="end">
                   <Col lg={12} md={18} sm={24} offset={0}>
                     <InvoiceAction>
@@ -301,11 +308,12 @@ function Invoice() {
                         Download
                       </Button> */}
                       <ReactToPrint
-                        trigger={() => 
-                        <Button size="medium" shape="round" type="primary">
-                          <FeatherIcon icon="download" size={14} />
-                          Download
-                        </Button>}
+                        trigger={() => (
+                          <Button size="medium" shape="round" type="primary">
+                            <FeatherIcon icon="download" size={14} />
+                            Download
+                          </Button>
+                        )}
                         content={() => componentRef}
                       />
                     </InvoiceAction>

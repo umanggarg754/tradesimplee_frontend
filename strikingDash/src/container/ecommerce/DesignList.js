@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Row, Col, Table } from 'antd';
+import { Row, Col, Table, Input, Form } from 'antd';
 import FeatherIcon from 'feather-icons-react';
 import { useSelector } from 'react-redux';
 import ReactToPrint from "react-to-print";
@@ -14,6 +14,7 @@ import { Button } from '../../components/buttons/buttons';
 // import { ExportButtonPageHeader } from '../../components/buttons/export-button/export-button';
 // import { CalendarButtonPageHeader } from '../../components/buttons/calendar-button/calendar-button';
 import { getDesignListAPI } from '../../config/api/orders';
+import {config} from '../../config/api/index'
 
 function DesignList() {
   const { rtl } = useSelector((state) => {
@@ -109,7 +110,7 @@ function DesignList() {
         </>
       ),
       container: <span>{product.container}</span>,
-      photo: <img src={`http://localhost:8080/assets/${product.photo}`} alt="disign-photo" style={{width:"150px", height:"150px"}}/>,
+      photo: <img src={`${config.API_URL}/assets/${product.photo}`} alt="disign-photo" style={{width:"150px", height:"150px"}}/>,
       pallets: <span>{product.pallets}</span>,
     //   boxes: <span>{product.box}</span>,
       piecesperbox: <span>{product.pcsperbox}</span>,
@@ -259,7 +260,7 @@ function DesignList() {
                 <br />
                 <br />
                 <ProductTable>
-                  <div className="table-invoice table-responsive">
+                  <div >
                     <Table dataSource={invoiceTableData} columns={invoiceTableColumns} pagination={false} />
                   </div>
                 </ProductTable>
@@ -294,6 +295,16 @@ function DesignList() {
                     </OrderSummary>
                   </Col>
                 </Row>
+                <Cards title="Other Details">
+                  <p>Terms and Conditions</p>
+                  <Form.Item label="">
+                    <Input.TextArea rows={5} name="terms_and_conditions" />
+                  </Form.Item>
+                  <p>Remarks</p>
+                  <Form.Item label="">
+                    <Input.TextArea rows={5} name="customer_notes" />
+                  </Form.Item>
+                </Cards>
                 <Row justify="end">
                   <Col lg={12} md={18} sm={24} offset={0}>
                     <InvoiceAction>

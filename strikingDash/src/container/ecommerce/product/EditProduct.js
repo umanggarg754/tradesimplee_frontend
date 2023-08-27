@@ -8,7 +8,7 @@ import { Cards } from '../../../components/cards/frame/cards-frame';
 import { Main, BasicFormWrapper, TableWrapper } from '../../styled';
 import { Button } from '../../../components/buttons/buttons';
 import { AddProductForm } from '../Style';
-import { createOrderAPI } from '../../../config/api/orders';
+import { createOrderAPI, getCurrencyListAPI } from '../../../config/api/orders';
 import { getContactAPI } from '../../../config/api/company';
 import { toastStyle } from '../../../utility/helper';
 // import Heading from '../../../components/heading/heading';
@@ -196,8 +196,8 @@ const generateFormData = (data) => {
     order_number : "",
     date : "",
     currency : "",
-    terms_and_conditions : "",
-    customer_notes : "",
+    // terms_and_conditions : "",
+    // customer_notes : "",
     products : [{
       serial_num:"",
       product_name:"",
@@ -205,6 +205,8 @@ const generateFormData = (data) => {
       quantity: "",
       stauts:"",
       photo:"",
+      sqm : "",
+      pricepersqm : ""
     }]
   })
 
@@ -213,6 +215,7 @@ const generateFormData = (data) => {
       ...prevData,
       [e.target.name]: e.target.value
     }));
+    console.log(createOrderJSONData)
   };
   
 
@@ -233,6 +236,8 @@ const generateFormData = (data) => {
         products: updatedProducts
       };
     });
+
+    console.log(createOrderJSONData)
   };
 
   const handleProductFieldPhotoChange = (index, e) => {
@@ -278,17 +283,19 @@ const generateFormData = (data) => {
           status: "",
           invoice_number: "",
           order_number: "",
-          date: "",
+          date: new Date(new Date().getTime() + 330 * 60 * 1000).toISOString().split('T')[0],
           currency: "",
-          terms_and_conditions: "",
-          customer_notes: "",
+          // terms_and_conditions: "",
+          // customer_notes: "",
           products: [{
             serial_num: "",
             product_name: "",
             price: "",
             quantity: "",
             status: "",
-            photo: ""
+            photo: "",
+            sqm : "",
+            pricepersqm : ""
           }]
         }
       
@@ -319,72 +326,73 @@ const generateFormData = (data) => {
       ),
       product_name : (
         <Form.Item>
-          <Input name="product_name" onChange={(e)=>handleProductFieldChange(0, e)}/>
+          <Input name="product_name" onChange={(e)=>handleProductFieldChange(0, e)} style={{ width: '400px' }}/>
         </Form.Item>
       ),
       packing : (
         <Form.Item>
-          <Input name="packing" onChange={(e)=>handleProductFieldChange(0, e)}/>
+          <Input name="packing" onChange={(e)=>handleProductFieldChange(0, e)} style={{ width: '100px' }}/>
         </Form.Item>
       ),
       quantity : (
         <Form.Item>
-          <Input name="quantity" onChange={(e)=>handleProductFieldChange(0, e)}/>
+          <Input name="quantity" onChange={(e)=>handleProductFieldChange(0, e)} style={{ width: '100px' }}/>
         </Form.Item>
       ),
       sqm : (
         <Form.Item>
-          <Input name="sqm" onChange={(e)=>handleProductFieldChange(0, e)}/>
+          <Input name="sqm" onChange={(e)=>handleProductFieldChange(0, e)} style={{ width: '100px' }}/>
         </Form.Item>
       ),
       pricepersqm : (
         <Form.Item>
-          <Input name="pricepersqm" onChange={(e)=>handleProductFieldChange(0, e)}/>
+          <Input name="pricepersqm" onChange={(e)=>handleProductFieldChange(0, e)} style={{ width: '100px' }}/>
         </Form.Item>
       ),
       box : (
         <Form.Item>
-          <Input name="box" onChange={(e)=>handleProductFieldChange(0, e)}/>
+          <Input name="box" onChange={(e)=>handleProductFieldChange(0, e)} style={{ width: '100px' }}/>
         </Form.Item>
       ),
       marksandnums : (
         <Form.Item>
-          <Input name="marksandnums" onChange={(e)=>handleProductFieldChange(0, e)}/>
+          <Input name="marksandnums" onChange={(e)=>handleProductFieldChange(0, e)} style={{ width: '100px' }}/>
         </Form.Item>
       ),
       container : (
         <Form.Item>
-          <Input name="container" onChange={(e)=>handleProductFieldChange(0, e)}/>
+          <Input name="container" onChange={(e)=>handleProductFieldChange(0, e)} style={{ width: '100px' }}/>
         </Form.Item>
       ),
       photo : (
         <Form.Item>
-          <input type="file" name="photo" onChange={(e)=>handleProductFieldPhotoChange(0, e)}/>
+          <input type="file" name="photo" onChange={(e)=>handleProductFieldPhotoChange(0, e)} style={{ width: '200px' }}/>
         </Form.Item>
       ),
       pallets : (
         <Form.Item>
-          <Input name="pallets" onChange={(e)=>handleProductFieldChange(0, e)}/>
+          <Input name="pallets" onChange={(e)=>handleProductFieldChange(0, e)} style={{ width: '100px' }}/>
         </Form.Item>
       ),
       pcsperbox : (
         <Form.Item>
-          <Input name="pcsperbox" onChange={(e)=>handleProductFieldChange(0, e)}/>
+          <Input name="pcsperbox" onChange={(e)=>handleProductFieldChange(0, e)} style={{ width: '100px' }}/>
         </Form.Item>
       ),
       brand : (
         <Form.Item>
-          <Input name="brand" onChange={(e)=>handleProductFieldChange(0, e)}/>
+          <Input name="brand" onChange={(e)=>handleProductFieldChange(0, e)} style={{ width: '100px' }}/>
         </Form.Item>
       ),
       grossweight : (
         <Form.Item>
-          <Input name="grossweight" onChange={(e)=>handleProductFieldChange(0, e)}/>
+          <Input name="grossweight" onChange={(e)=>handleProductFieldChange(0, e)} style={{ width: '100px' }}/>
         </Form.Item>
       ),
       totalamount : (
         <Form.Item>
           <Input name="price" onChange={(e)=>handleProductFieldChange(0, e)}/>
+          {/* <p>{createOrderJSONData.products[0].pricepersqm && createOrderJSONData.products[0].sqm ? parseInt(createOrderJSONData.sqm)*parseInt(createOrderJSONData.pricepersqm) : "NA"}</p> */}
         </Form.Item>
       )
     }
@@ -525,6 +533,8 @@ const generateFormData = (data) => {
 
   const [customerDetail, setCustomerDetail] = useState([])
 
+  const [currencyList, setCurrencyList] = useState([])
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -532,6 +542,10 @@ const generateFormData = (data) => {
         const response = await getContactAPI(token);
         console.log(response);
         setCustomerDetail(response.data)
+
+        const response2 = await getCurrencyListAPI(token);
+        console.log(response2);
+        setCurrencyList(response2.data)
         // setLoading(false);
       } catch (error) {
         console.log(error.message);
@@ -542,6 +556,24 @@ const generateFormData = (data) => {
     fetchData();
   }, []);
 
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = localStorage.getItem('loginToken');
+
+        const response = await getCurrencyListAPI(token);
+        console.log(response);
+        setCurrencyList(response.data)
+        // setLoading(false);
+      } catch (error) {
+        console.log(error.message);
+        // setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
   
 
 
@@ -588,10 +620,20 @@ const generateFormData = (data) => {
                                     <Input name="order_number" onChange={handleNormalFieldChange}/>
                                   </Form.Item>
                                   <Form.Item label="Date">
-                                    <Input name="date" onChange={handleNormalFieldChange}/>
+                                    <Input name="date" onChange={handleNormalFieldChange} defaultValue={new Date(new Date().getTime() + 330 * 60 * 1000).toISOString().split('T')[0]}/>
                                   </Form.Item>
                                   <Form.Item label="Currency">
-                                    <Input name="currency" onChange={handleNormalFieldChange}/>
+                                    {/* <Input name="currency" onChange={handleNormalFieldChange}/> */}
+                                    <Select style={{ width: '100%' }} onChange={(e)=>{
+                                      setCreateOrderJSONData(prevData => ({
+                                        ...prevData,
+                                        currency: e
+                                      }));
+                                    }}>
+                                      {currencyList?.map((item,index)=>(
+                                        <Option value={item.id} key={index}>{item.currency}</Option>
+                                      ))}
+                                    </Select>
                                   </Form.Item>
 
                                   {/* <Form.Item name="price" initialValue="120" label="Price">
@@ -649,7 +691,7 @@ const generateFormData = (data) => {
                                     ):null}
                                 </Cards>
                               </div>
-                              <div className="add-product-content" style={{marginTop:"2rem"}}>
+                              {/* <div className="add-product-content" style={{marginTop:"2rem"}}>
                                 <Cards title="">
                                   <Form.Item
                                     label="Terms and Conditions"
@@ -662,7 +704,7 @@ const generateFormData = (data) => {
                                     <Input.TextArea rows={5} name="customer_notes" onChange={handleNormalFieldChange}/>
                                   </Form.Item>
                                 </Cards>
-                              </div>
+                              </div> */}
                             </Col>
                           </Row>
                         </div>
