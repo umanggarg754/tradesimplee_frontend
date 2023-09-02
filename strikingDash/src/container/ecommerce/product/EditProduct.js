@@ -135,8 +135,8 @@ function EditProduct() {
     },
     {
       title: 'Total Amount',
-      dataIndex: 'totalamount',
-      key: 'totalamount',
+      dataIndex: 'price',
+      key: 'price',
     }
   ];
 
@@ -194,7 +194,7 @@ const generateFormData = (data) => {
     status : "",
     invoice_number : "",
     order_number : "",
-    date : "",
+    date : new Date(new Date().getTime() + 330 * 60 * 1000).toISOString().split('T')[0],
     currency : "",
     // terms_and_conditions : "",
     // customer_notes : "",
@@ -389,7 +389,7 @@ const generateFormData = (data) => {
           <Input name="grossweight" onChange={(e)=>handleProductFieldChange(0, e)} style={{ width: '100px' }}/>
         </Form.Item>
       ),
-      totalamount : (
+      price : (
         <Form.Item>
           <Input name="price" onChange={(e)=>handleProductFieldChange(0, e)}/>
           {/* <p>{createOrderJSONData.products[0].pricepersqm && createOrderJSONData.products[0].sqm ? parseInt(createOrderJSONData.sqm)*parseInt(createOrderJSONData.pricepersqm) : "NA"}</p> */}
@@ -477,7 +477,7 @@ const generateFormData = (data) => {
           <Input name="grossweight" onChange={(e)=>handleProductFieldChange(idx-1, e)}/>
         </Form.Item>
       ),
-      totalamount : (
+      price : (
         <Form.Item>
           <Input name="price" onChange={(e)=>handleProductFieldChange(idx-1, e)}/>
         </Form.Item>
@@ -504,7 +504,8 @@ const generateFormData = (data) => {
         pallets : "",
         pcsperbox : "",
         brand : "",
-        grossweight : ""
+        grossweight : "",
+        price: ""
       }
     };
     const updatedCreateOrderJSONData = { ...createOrderJSONData };
