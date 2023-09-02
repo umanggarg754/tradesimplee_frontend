@@ -22,7 +22,7 @@ const AuthLayout = (WraperContent) => {
                 </Heading>
                 <img
                   className="auth-content-figure"
-                  src={require('../../../static/img/auth/Illustration.png')}
+                  src="https://i.postimg.cc/9QZj07CZ/Black-White-Yellow-Simple-Initial-Name-Logo-1-removebg-preview.png"
                   alt=""
                 />
               </Content>

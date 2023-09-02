@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable no-shadow */
 import React, { Component } from 'react';
 import { Layout, Button, Row, Col } from 'antd';
@@ -7,11 +9,14 @@ import { Scrollbars } from 'react-custom-scrollbars';
 import { ThemeProvider } from 'styled-components';
 import { connect } from 'react-redux';
 import propTypes from 'prop-types';
+// import FontAwesome from 'react-fontawesome';
 import MenueItems from './MenueItems';
 import TopMenu from './TopMenu';
-import { Div, SmallScreenAuthInfo, SmallScreenSearch, TopMenuSearch } from './style';
-import HeaderSearch from '../components/header-search/header-search';
+import { Div, SmallScreenAuthInfo } from './style';
+// import { Div, SmallScreenAuthInfo, SmallScreenSearch, TopMenuSearch } from './style';
+// import HeaderSearch from '../components/header-search/header-search';
 import AuthInfo from '../components/utilities/auth-info/info';
+import { changeRtlMode, changeLayoutMode, changeMenuMode } from '../redux/themeLayout/actionCreator';
 
 const { darkTheme } = require('../config/theme/themeVariables');
 
@@ -25,8 +30,9 @@ const ThemeLayout = (WrappedComponent) => {
       this.state = {
         collapsed: false,
         hide: true,
-        searchHide: true,
-        activeSearch: false,
+        // searchHide: true,        
+        // activeSearch: false,
+        // customizerAction: false
       };
       this.updateDimensions = this.updateDimensions.bind(this);
     }
@@ -47,8 +53,10 @@ const ThemeLayout = (WrappedComponent) => {
     }
 
     render() {
-      const { collapsed, hide, searchHide, activeSearch } = this.state;
-      const { ChangeLayoutMode, rtl, topMenu } = this.props;
+      // const { collapsed, hide, searchHide, activeSearch, customizerAction } = this.state;
+      const { collapsed, hide } = this.state;
+
+      const { ChangeLayoutMode, rtl, topMenu, changeRtl, changeLayout, changeMenuMode } = this.props;
 
       const left = !rtl ? 'left' : 'right';
       const darkMode = ChangeLayoutMode;
@@ -66,26 +74,32 @@ const ThemeLayout = (WrappedComponent) => {
         }
       };
 
+      // const showCustomizer = () => {
+      //   this.setState({
+      //     customizerAction: !customizerAction,
+      //   });
+      // };
+
       const onShowHide = () => {
         this.setState({
           hide: !hide,
-          searchHide: true,
+          // searchHide: true,
         });
       };
 
-      const toggleSearch = () => {
-        this.setState({
-          activeSearch: !activeSearch,
-        });
-      };
+      // const toggleSearch = () => {
+      //   this.setState({
+      //     activeSearch: !activeSearch,
+      //   });
+      // };
 
-      const handleSearchHide = (e) => {
-        e.preventDefault();
-        this.setState({
-          searchHide: !searchHide,
-          hide: true,
-        });
-      };
+      // const handleSearchHide = (e) => {
+      //   e.preventDefault();
+      //   this.setState({
+      //     searchHide: !searchHide,
+      //     hide: true,
+      //   });
+      // };
 
       const footerStyle = {
         padding: '20px 30px 18px',
@@ -147,6 +161,43 @@ const ThemeLayout = (WrappedComponent) => {
         return <div style={{ ...style, ...thumbStyle }} {...props} />;
       };
 
+      const onRtlChange = () => {
+        const html = document.querySelector('html');
+        html.setAttribute('dir', 'rtl');
+        changeRtl(true);
+      };
+
+      const onLtrChange = () => {
+        const html = document.querySelector('html');
+        html.setAttribute('dir', 'ltr');
+        changeRtl(false);
+      };
+
+      const modeChangeDark = () => {
+        changeLayout(true);
+      };
+
+      const modeChangeLight = () => {
+        changeLayout(false);
+      };
+
+      const modeChangeTopNav = () => {
+        changeMenuMode(true);
+      };
+
+      const modeChangeSideNav = () => {
+        changeMenuMode(false);
+      };
+
+      const onEventChange = {
+        onRtlChange,
+        onLtrChange,
+        modeChangeDark,
+        modeChangeLight,
+        modeChangeTopNav,
+        modeChangeSideNav,
+      };
+
       return (
         <Div darkMode={darkMode}>
           <Layout className="layout">
@@ -167,48 +218,45 @@ const ThemeLayout = (WrappedComponent) => {
                   ) : null}
                   <Link
                     className={topMenu && window.innerWidth > 991 ? 'striking-logo top-menu' : 'striking-logo'}
-                    to="/admin"
+                    to="/"
                   >
                     <img
-                      src={
-                        !darkMode
-                          ? require(`../static/img/Logo_Dark.svg`).default
-                          : require(`../static/img/Logo_white.png`).default
-                      }
+                      src="https://i.postimg.cc/P5Tz0g3Z/Black-White-Yellow-Simple-Initial-Name-Logo-1-removebg-preview-1.png"
                       alt=""
                     />
                   </Link>
                 </Col>
 
                 <Col lg={!topMenu ? 14 : 15} md={8} sm={0} xs={0}>
-                  {topMenu && window.innerWidth > 991 ? <TopMenu /> : <HeaderSearch rtl={rtl} darkMode={darkMode} />}
+                  {topMenu && window.innerWidth > 991 ? <TopMenu /> : null}
                 </Col>
 
                 <Col lg={6} md={10} sm={0} xs={0}>
                   {topMenu && window.innerWidth > 991 ? (
-                    <TopMenuSearch>
-                      <div className="top-right-wrap d-flex">
-                        <Link
-                          className={`${activeSearch ? 'search-toggle active' : 'search-toggle'}`}
-                          onClick={() => {
-                            toggleSearch();
-                          }}
-                          to="#"
-                        >
-                          <FeatherIcon icon="search" />
-                          <FeatherIcon icon="x" />
-                        </Link>
-                        <div className={`${activeSearch ? 'topMenu-search-form show' : 'topMenu-search-form'}`}>
-                          <form action="">
-                            <span className="search-icon">
-                              <FeatherIcon icon="search" />
-                            </span>
-                            <input type="text" name="search" />
-                          </form>
-                        </div>
-                        <AuthInfo />
-                      </div>
-                    </TopMenuSearch>
+                    // <TopMenuSearch>
+                    //   <div className="top-right-wrap d-flex">
+                    //     <Link
+                    //       className={`${activeSearch ? 'search-toggle active' : 'search-toggle'}`}
+                    //       onClick={() => {
+                    //         toggleSearch();
+                    //       }}
+                    //       to="#"
+                    //     >
+                    //       <FeatherIcon icon="search" />
+                    //       <FeatherIcon icon="x" />
+                    //     </Link>
+                    //     <div className={`${activeSearch ? 'topMenu-search-form show' : 'topMenu-search-form'}`}>
+                    //       <form action="">
+                    //         <span className="search-icon">
+                    //           <FeatherIcon icon="search" />
+                    //         </span>
+                    //         <input type="text" name="search" />
+                    //       </form>
+                    //     </div>
+                    //     <AuthInfo />
+                    //   </div>
+                    // </TopMenuSearch>
+                    null
                   ) : (
                     <AuthInfo />
                   )}
@@ -216,9 +264,9 @@ const ThemeLayout = (WrappedComponent) => {
 
                 <Col md={0} sm={18} xs={12}>
                   <div className="mobile-action">
-                    <Link className="btn-search" onClick={handleSearchHide} to="#">
+                    {/* <Link className="btn-search" onClick={handleSearchHide} to="#">
                       {searchHide ? <FeatherIcon icon="search" /> : <FeatherIcon icon="x" />}
-                    </Link>
+                    </Link> */}
                     <Link className="btn-auth" onClick={onShowHide} to="#">
                       <FeatherIcon icon="more-vertical" />
                     </Link>
@@ -230,9 +278,9 @@ const ThemeLayout = (WrappedComponent) => {
               <Row>
                 <Col md={0} sm={24} xs={24}>
                   <div className="small-screen-headerRight">
-                    <SmallScreenSearch hide={searchHide} darkMode={darkMode}>
+                    {/* <SmallScreenSearch hide={searchHide} darkMode={darkMode}>
                       <HeaderSearch rtl={rtl} />
-                    </SmallScreenSearch>
+                    </SmallScreenSearch> */}
                     <SmallScreenAuthInfo hide={hide} darkMode={darkMode}>
                       <AuthInfo rtl={rtl} />
                     </SmallScreenAuthInfo>
@@ -260,6 +308,7 @@ const ThemeLayout = (WrappedComponent) => {
                         rtl={rtl}
                         toggleCollapsed={toggleCollapsedMobile}
                         darkMode={darkMode}
+                        events={onEventChange}
                       />
                     </Scrollbars>
                   </Sider>
@@ -286,6 +335,133 @@ const ThemeLayout = (WrappedComponent) => {
               </Layout>
             </Layout>
           </Layout>
+          {/* <Link
+            to="#"
+            className="customizer-trigger"
+            onClick={() => {
+              showCustomizer();
+            }}
+          >
+            <FeatherIcon icon="settings" />
+          </Link> */}
+          {/* <div className={`${customizerAction ? 'customizer-wrapper show' : 'customizer-wrapper'}`}>
+            <div className="customizer">
+              <div className="customizer__head">
+                <h4 className="customizer__title">Customizer</h4>
+                <span className="customizer__sub-title">Customize your overview Page layout</span>
+                <Link
+                  to="#"
+                  className="customizer-close"
+                  onClick={() => {
+                    showCustomizer();
+                  }}
+                >
+                  <FeatherIcon icon="x" />
+                </Link>
+              </div>
+              <div className="customizer__body">
+                <div className="customizer__single">
+                  <h4>Layout Type</h4>
+                  <ul className="customizer-list d-flex">
+                    <li className="customizer-list__item">
+                      <Link
+                        className={!rtl ? 'active' : 'deactivate'}
+                        onClick={() => {
+                          showCustomizer();
+                          onLtrChange();
+                        }}
+                        to="#"
+                      >
+                        <img src={require('../static/img/ltr.png')} alt="" />
+                        <FontAwesome name="check-circle" />
+                      </Link>
+                    </li>
+                    <li className="customizer-list__item">
+                      <Link
+                        className={rtl ? 'active' : 'deactivate'}
+                        onClick={() => {
+                          showCustomizer();
+                          onRtlChange();
+                        }}
+                        to="#"
+                      >
+                        <img src={require(`../static/img/rtl.png`)} alt="" />
+                        <FontAwesome name="check-circle" />
+                      </Link>
+                    </li>
+                  </ul>
+                </div>
+                <div className="customizer__single">
+                  <h4>Sidebar Type</h4>
+                  <ul className="customizer-list d-flex">
+                    <li className="customizer-list__item">
+                      <Link
+                        className={!darkMode ? 'active' : 'deactivate'}
+                        onClick={() => {
+                          showCustomizer();
+                          modeChangeLight();
+                        }}
+                        to="#"
+                      >
+                        <img src={require('../static/img/light.png')} alt="" />
+                        <FontAwesome name="check-circle" />
+                      </Link>
+                    </li>
+                    <li className="customizer-list__item">
+                      <Link
+                        className={darkMode ? 'active' : 'deactivate'}
+                        onClick={() => {
+                          showCustomizer();
+                          modeChangeDark();
+                        }}
+                        to="#"
+                      >
+                        <img src={require(`../static/img/dark.png`)} alt="" />
+                        <FontAwesome name="check-circle" />
+                      </Link>
+                    </li>
+                  </ul>
+                </div>
+                <div className="customizer__single">
+                  <h4>Navbar Type</h4>
+                  <ul className="customizer-list d-flex">
+                    <li className="customizer-list__item">
+                      <Link
+                        className={!topMenu ? 'active' : 'deactivate'}
+                        onClick={() => {
+                          showCustomizer();
+                          modeChangeSideNav();
+                        }}
+                        to="#"
+                      >
+                        <img src={require('../static/img/side.png')} alt="" />
+                        <FontAwesome name="check-circle" />
+                      </Link>
+                    </li>
+                    <li className="customizer-list__item top">
+                      <Link
+                        className={topMenu ? 'active' : 'deactivate'}
+                        onClick={() => {
+                          showCustomizer();
+                          modeChangeTopNav();
+                        }}
+                        to="#"
+                      >
+                        <img src={require(`../static/img/top.png`)} alt="" />
+                        <FontAwesome name="check-circle" />
+                      </Link>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div> */}
+          {/* <span
+            className={`${customizerAction ? 'overlay-dark show' : 'overlay-dark'}`}
+            onClick={() => {
+              showCustomizer();
+            }}
+          /> */}
         </Div>
       );
     }
@@ -299,6 +475,14 @@ const ThemeLayout = (WrappedComponent) => {
     };
   };
 
+  const mapStateToDispatch = (dispatch) => {
+    return {
+      changeRtl: (rtl) => dispatch(changeRtlMode(rtl)),
+      changeLayout: (show) => dispatch(changeLayoutMode(show)),
+      changeMenuMode: (show) => dispatch(changeMenuMode(show)),
+    };
+  };
+
   LayoutComponent.propTypes = {
     ChangeLayoutMode: propTypes.bool,
     rtl: propTypes.bool,
@@ -308,6 +492,6 @@ const ThemeLayout = (WrappedComponent) => {
     changeMenuMode: propTypes.func,
   };
 
-  return connect(mapStateToProps)(LayoutComponent);
+  return connect(mapStateToProps, mapStateToDispatch)(LayoutComponent);
 };
 export default ThemeLayout;

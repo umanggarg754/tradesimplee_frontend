@@ -1,15 +1,23 @@
 import React from 'react';
 import { Menu } from 'antd';
 import { NavLink, useRouteMatch } from 'react-router-dom';
+// import { ReactSVG } from 'react-svg';
 import FeatherIcon from 'feather-icons-react';
 import propTypes from 'prop-types';
+// import { NavTitle } from './style';
+// import versions from '../demoData/changelog.json';
 
-const MenuItems = ({ darkMode, toggleCollapsed, topMenu }) => {
+const { SubMenu } = Menu;
+
+// function MenuItems({ darkMode, toggleCollapsed, topMenu, events }) {
+function MenuItems({ darkMode, toggleCollapsed, topMenu }) {
+  
   const { path } = useRouteMatch();
   const pathName = window.location.pathname;
   const pathArray = pathName.split(path);
   const mainPath = pathArray[1];
   const mainPathSplit = mainPath.split('/');
+  // const { onRtlChange, onLtrChange, modeChangeDark, modeChangeLight, modeChangeTopNav, modeChangeSideNav } = events;
   const [openKeys, setOpenKeys] = React.useState(
     !topMenu ? [`${mainPathSplit.length > 2 ? mainPathSplit[1] : 'dashboard'}`] : [],
   );
@@ -42,11 +50,50 @@ const MenuItems = ({ darkMode, toggleCollapsed, topMenu }) => {
       overflowedIndicator={<FeatherIcon icon="more-vertical" />}
       openKeys={openKeys}
     >
-      <Menu.Item key="home">
-        <NavLink onClick={toggleCollapsed} to={`${path}`}>
-          Dashboard
+      <Menu.Item
+        icon={
+          !topMenu && (
+            <NavLink className="menuItem-iocn" to={`${path}/contact/list`}>
+              <FeatherIcon icon="user-plus" />
+            </NavLink>
+          )
+        }
+        key="contact"
+      >
+        <NavLink onClick={toggleCollapsed} to={`${path}/contact/list`}>
+          Contact
         </NavLink>
       </Menu.Item>
+
+      <SubMenu key="project" icon={!topMenu && <FeatherIcon icon="target" />} title="Orders">
+        <Menu.Item key="view">
+          <NavLink onClick={toggleCollapsed} to={`${path}/orders/all-orders`}>
+            All Orders
+          </NavLink>
+        </Menu.Item>
+        <Menu.Item key="views">
+          <NavLink onClick={toggleCollapsed} to={`${path}/orders/create-orders`}>
+            Create Order
+          </NavLink>
+        </Menu.Item>
+      </SubMenu>
+
+      {/* {!topMenu && <NavTitle className="sidebar-nav-title">CRUD</NavTitle>} */}
+
+      {/* <Menu.Item
+        icon={
+          !topMenu && (
+            <NavLink className="menuItem-iocn" to={`${path}/settings`}>
+              <FeatherIcon icon="settings" />
+            </NavLink>
+          )
+        }
+        key="settings"
+      >
+        <NavLink onClick={toggleCollapsed} to={`${path}/settings`}>
+          Settings
+        </NavLink>
+      </Menu.Item> */}
     </Menu>
   );
 }
@@ -55,6 +102,7 @@ MenuItems.propTypes = {
   darkMode: propTypes.bool,
   topMenu: propTypes.bool,
   toggleCollapsed: propTypes.func,
+  // events: propTypes.object,
 };
 
 export default MenuItems;
