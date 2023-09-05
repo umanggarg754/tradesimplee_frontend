@@ -6,13 +6,12 @@
 const API = {
   auth: {
     login: '/login',
-    signUp: '/signup',
-  },
+    signUp: '/signup'
+  }
 };
 
 const config = {
-  //API_URL: "http://localhost:8080",
-  API_URL: "http://13.127.56.105:8080",
+  API_URL: "http://13.127.56.105:8080" // "http://localhost:8080"
 }
 
 export { API, config };
