@@ -78,7 +78,7 @@ function MenuItems({ darkMode, toggleCollapsed, topMenu }) {
         </Menu.Item>
       </SubMenu>
 
-      <SubMenu key="template" icon={!topMenu && <FeatherIcon icon="codesandbox" />} title="Templates">
+      <SubMenu key="template" icon={!topMenu && <FeatherIcon icon="codesandbox" />} title="Product Templates">
         <Menu.Item key="all-template">
           <NavLink onClick={toggleCollapsed} to={`${path}/template/list`}>
             All Templates
@@ -86,6 +86,19 @@ function MenuItems({ darkMode, toggleCollapsed, topMenu }) {
         </Menu.Item>
         <Menu.Item key="create-template">
           <NavLink onClick={toggleCollapsed} to={`${path}/template/create`}>
+            Create Template
+          </NavLink>
+        </Menu.Item>
+      </SubMenu>
+
+      <SubMenu key="doc-template" icon={!topMenu && <FeatherIcon icon="codepen" />} title="Document Templates">
+        <Menu.Item key="doc-all-template">
+          <NavLink onClick={toggleCollapsed} to={`${path}/document-template/list`}>
+            All Templates
+          </NavLink>
+        </Menu.Item>
+        <Menu.Item key="doc-create-template">
+          <NavLink onClick={toggleCollapsed} to={`${path}/document-template/create`}>
             Create Template
           </NavLink>
         </Menu.Item>

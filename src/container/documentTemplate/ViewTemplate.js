@@ -7,21 +7,21 @@ import { PageHeader } from '../../components/page-headers/page-headers';
 import { Main, TableWrapper } from '../styled';
 import { Button } from '../../components/buttons/buttons';
 import { Cards } from '../../components/cards/frame/cards-frame';
-import { getTemplateListAPI } from '../../config/api/template';
+import { getDocumentTemplateListAPI } from '../../config/api/template';
 
 function ViewTemplate() {
   const history = useHistory();
 
-  const [templateList, setTemplateList] = useState([]);
+  const [docTemplateList, setDocTemplateList] = useState([]);
 
 
   useEffect(()=>{
     const fetchData = async () => {
       try {
         const token = localStorage.getItem("loginToken")
-        const response = await getTemplateListAPI(token);
+        const response = await getDocumentTemplateListAPI(token);
         console.log(response)
-        setTemplateList(response?.data);
+        setDocTemplateList(response?.data);
       } catch (error) {
         console.log(error.message);
       }
@@ -32,8 +32,8 @@ function ViewTemplate() {
   },[])
 
   const dataSource = [];
-  if (templateList?.length) {
-    templateList.map((value, key) => {
+  if (docTemplateList?.length) {
+    docTemplateList.map((value, key) => {
       return dataSource.push({
         id: <span className="order-id">{key+1}</span>,
         name: <span className="customer-name">{value.name}</span>,
@@ -91,7 +91,7 @@ function ViewTemplate() {
                 <Table
                   dataSource={dataSource}
                   columns={columns}
-                  pagination={{ pageSize: 10, showSizeChanger: true, total: templateList?.length }}
+                  pagination={{ pageSize: 10, showSizeChanger: true, total: docTemplateList?.length }}
                 />
               </TableWrapper>
             </Col>

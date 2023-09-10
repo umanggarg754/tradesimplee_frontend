@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 // import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
-import { Row, Col, Table } from 'antd';
+import { Row, Col, Table, Select } from 'antd';
 import FeatherIcon from 'feather-icons-react';
 import { TopToolBox } from './Style';
 import { PageHeader } from '../../components/page-headers/page-headers';
@@ -15,35 +15,37 @@ import { Cards } from '../../components/cards/frame/cards-frame';
 // import { ExportButtonPageHeader } from '../../components/buttons/export-button/export-button';
 // import { CalendarButtonPageHeader } from '../../components/buttons/calendar-button/calendar-button';
 import { getOrderListAPI } from '../../config/api/orders';
+import { getDocumentTemplateListAPI } from '../../config/api/template';
+
+const { Option } = Select;
 
 function Orders() {
   const history = useHistory();
   // const dispatch = useDispatch();
-//   const { searchData, orders } = useSelector(state => {
-//     return {
-//       searchData: state.headerSearchData,
-//       orders: state.orders.data,
-//     };
-//   });
+  //   const { searchData, orders } = useSelector(state => {
+  //     return {
+  //       searchData: state.headerSearchData,
+  //       orders: state.orders.data,
+  //     };
+  //   });
 
-//   const [state, setState] = useState({
-//     notData: searchData,
-//     item: orders,
-//     selectedRowKeys: [],
-//   });
+  //   const [state, setState] = useState({
+  //     notData: searchData,
+  //     item: orders,
+  //     selectedRowKeys: [],
+  //   });
 
-//   const { notData, selectedRowKeys } = state;
+  //   const { notData, selectedRowKeys } = state;
   // const filterKey = ['Shipped', 'Awaiting Shipment', 'Canceled'];
 
   const [orderList, setOrderList] = useState([]);
 
-
-  useEffect(()=>{
+  useEffect(() => {
     const fetchData = async () => {
       try {
-        const token = localStorage.getItem("loginToken")
+        const token = localStorage.getItem('loginToken');
         const response = await getOrderListAPI(token);
-        console.log(response)
+        console.log(response);
         setOrderList(response?.data);
         // setLoading(false);
       } catch (error) {
@@ -53,29 +55,45 @@ function Orders() {
     };
 
     fetchData();
+  }, []);
 
-  },[])
+  //   useEffect(() => {
+  //     if (orders) {
+  //       setState({
+  //         item: orders,
+  //         selectedRowKeys,
+  //       });
+  //     }
+  //   }, [orders, selectedRowKeys]);
 
-//   useEffect(() => {
-//     if (orders) {
-//       setState({
-//         item: orders,
-//         selectedRowKeys,
-//       });
-//     }
-//   }, [orders, selectedRowKeys]);
-
-//   const handleSearch = searchText => {
-//     const data = searchData.filter(value => value.title.toUpperCase().startsWith(searchText.toUpperCase()));
-//     setState({
-//       ...state,
-//       notData: data,
-//     });
-//   };
+  //   const handleSearch = searchText => {
+  //     const data = searchData.filter(value => value.title.toUpperCase().startsWith(searchText.toUpperCase()));
+  //     setState({
+  //       ...state,
+  //       notData: data,
+  //     });
+  //   };
 
   // const handleChangeForFilter = e => {
   //   dispatch(orderFilter('status', e.target.value));
   // };
+
+  const [docTemplateList, setDocTemplateList] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = localStorage.getItem('loginToken');
+        const response = await getDocumentTemplateListAPI(token);
+        console.log(response);
+        setDocTemplateList(response?.data);
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const dataSource = [];
   if (orderList?.length) {
@@ -99,15 +117,47 @@ function Orders() {
         action: (
           <div className="table-actions">
             <>
-              {/* <Button className="btn-icon" type="primary" shape="circle" onClick={()=>history.push(`/admin/ecommerce/edit-order?id=${value.id}`)}>
+              <Button
+                className="btn-icon"
+                type="primary"
+                shape="circle"
+                onClick={() => history.push(`/admin/ecommerce/edit-order?id=${value.id}`)}
+              >
                 <FeatherIcon icon="eye" size={16} />
-              </Button> */}
-              <Button className="btn-icon" type="info" to="#" shape="circle" onClick={()=>history.push(`/admin/orders/invoice?id=${value.id}`)}>
+              </Button>
+              <Select
+                value="Document" // Set the default value if needed
+                onChange={(val) => {
+                  const selectedItemId = val; // This is the selected value
+                  console.log('yo');
+                  history.push(`/admin/orders/invoice?order_id=${value.id}&template_id=${selectedItemId}`);
+                }}
+              >
+                {docTemplateList?.map((item, index) => (
+                  <Option value={item.id} key={index}>
+                    {item.name}
+                  </Option>
+                ))}
+              </Select>
+
+              {/* <Button
+                className="btn-icon"
+                type="info"
+                to="#"
+                shape="circle"
+                onClick={() => history.push(`/admin/orders/invoice?id=${value.id}`)}
+              >
                 <FeatherIcon icon="edit" size={16} />
               </Button>
-              <Button className="btn-icon" type="danger" to="#" shape="circle" onClick={()=>history.push(`/admin/orders/design-list?id=${value.id}`)}>
+              <Button
+                className="btn-icon"
+                type="danger"
+                to="#"
+                shape="circle"
+                onClick={() => history.push(`/admin/orders/design-list?id=${value.id}`)}
+              >
                 <FeatherIcon icon="list" size={16} />
-              </Button>
+              </Button> */}
             </>
           </div>
         ),
