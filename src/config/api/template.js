@@ -91,9 +91,29 @@ export const getTemplateListAPI = async (token) => {
     }
   };
 
+  
+
   export const getDocumentTemplateDetailsAPI = async (orderId, docTemplateId, token) => {
     const baseURL = config.API_URL;
     const path = `/api/order/createDocument/${orderId}/${docTemplateId}`;
+    console.log(`${baseURL + path}`)
+    try {
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+  
+  
+      const response = await axios.get(`${baseURL + path}`, { headers});
+      console.log(response);
+      return { status: response.status, data: response.data };
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  export const getDocumentTemplateDetailsByIdAPI = async (id, token) => {
+    const baseURL = config.API_URL;
+    const path = `/api/docTemplate/getUserTemplates/${id}`;
     console.log(`${baseURL + path}`)
     try {
       const headers = {

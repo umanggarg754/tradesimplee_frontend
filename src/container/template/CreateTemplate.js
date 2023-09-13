@@ -135,7 +135,7 @@ function CreateTemplate() {
 
                                   <div style={{ display: 'flex', gap: '20px', marginBottom: '2rem' }}>
                                     <div style={{ flex: 1 }}>
-                                      <Form.Item label="Field Name">
+                                      <Form.Item label="Field Name (This field is reserved for product name/description)">
                                         <Input name="field-name" onChange={(e) => handleNameChange(0, e)} defaultValue="Product Description"/>
                                       </Form.Item>
                                     </div>
@@ -161,7 +161,7 @@ function CreateTemplate() {
                                   </div>
                                   <div style={{ display: 'flex', gap: '20px', marginBottom: '2rem' }}>
                                     <div style={{ flex: 1 }}>
-                                      <Form.Item label="Field Name">
+                                      <Form.Item label="Field Name (This field is reserved for product quantity)">
                                         <Input name="field-name" onChange={(e) => handleNameChange(1, e)} defaultValue="Quantity"/>
                                       </Form.Item>
                                     </div>
@@ -187,7 +187,7 @@ function CreateTemplate() {
                                   </div>
                                   <div style={{ display: 'flex', gap: '20px', marginBottom: '2rem' }}>
                                     <div style={{ flex: 1 }}>
-                                      <Form.Item label="Field Name">
+                                      <Form.Item label="Field Name (This field is reserved for product price per quantity)">
                                         <Input name="field-name" onChange={(e) => handleNameChange(2, e)} defaultValue="Price per Product"/>
                                       </Form.Item>
                                     </div>

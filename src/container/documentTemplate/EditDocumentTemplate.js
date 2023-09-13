@@ -1,21 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Form, Input, Select } from 'antd';
-import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
-import toast from 'react-hot-toast';
+// import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
+import { useLocation } from 'react-router-dom'
+// import toast from 'react-hot-toast';
 import { AddProductForm } from './Style';
 import { Main, BasicFormWrapper } from '../styled';
 import { Checkbox } from '../../components/checkbox/checkbox';
 import { PageHeader } from '../../components/page-headers/page-headers';
 import { Cards } from '../../components/cards/frame/cards-frame';
-import { Button } from '../../components/buttons/buttons';
-import { createDocumentTemplateAPI, getTemplateListAPI, getTemplateDetailsAPI } from '../../config/api/template';
-import { toastStyle } from '../../utility/helper';
+// import { Button } from '../../components/buttons/buttons';
+import { getTemplateListAPI, getTemplateDetailsAPI, getDocumentTemplateDetailsByIdAPI } from '../../config/api/template';
+// import { toastStyle } from '../../utility/helper';
 
 const { Option } = Select;
 
-function CreateTemplate() {
+function EditDocumentTemplate() {
   const [form] = Form.useForm();
-  const history = useHistory();
+  // const history = useHistory();
+
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const id = queryParams.get('template_id');
 
   const [templateDetails, setTemplateDetails] = useState();
   const [templateList, setTemplateList] = useState([]);
@@ -39,30 +44,29 @@ function CreateTemplate() {
     console.log(createOrderJSONData);
   };
 
-  const handleSubmit = async (event) => {
-    console.log(createOrderJSONData)
-    event.preventDefault();
+  // const handleSubmit = async (event) => {
+  //   event.preventDefault();
 
-    try {
-      const token = localStorage.getItem('loginToken');
-      const response = await createDocumentTemplateAPI(createOrderJSONData, token);
+  //   try {
+  //     const token = localStorage.getItem('loginToken');
+  //     const response = await createDocumentTemplateAPI(createOrderJSONData, token);
 
-      console.log(response);
-      if (response.status === 201) {
-        // Handle success
-        toast.success('Templated Added Successfully 🥳', { ...toastStyle.success });
+  //     console.log(response);
+  //     if (response.status === 201) {
+  //       // Handle success
+  //       toast.success('Templated Added Successfully 🥳', { ...toastStyle.success });
         
-        history.push('/admin/document-template/list');
-      } else {
-        // Handle error
-        console.error('Error creating order');
-        toast.error('Something Bad happened', { ...toastStyle.error });
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      toast.error('Something Bad happened', { ...toastStyle.error });
-    }
-  };
+  //       history.push('/admin/document-template/list');
+  //     } else {
+  //       // Handle error
+  //       console.error('Error creating order');
+  //       toast.error('Something Bad happened', { ...toastStyle.error });
+  //     }
+  //   } catch (error) {
+  //     console.error('Error:', error);
+  //     toast.error('Something Bad happened', { ...toastStyle.error });
+  //   }
+  // };
 
 
   useEffect(() => {
@@ -115,18 +119,21 @@ function CreateTemplate() {
   };
 
   const handleCheckboxChangeProduct = (name, index) => {
+    console.log(index)
     setCreateOrderJSONData((prevData) => {
       const isChecked = prevData.details.product_details.includes(name);
   
       let updatedGeneralDetails;
   
       if (index === 1) {
+        // If index is 1, insert "price" into product_details
         updatedGeneralDetails = isChecked
           ? prevData.details.product_details.includes("quantity")
             ? prevData.details.product_details.filter((item) => item !== name)
             : [...prevData.details.product_details, "quantity"]
         : [...prevData.details.product_details, "quantity"]
       } else if (index === 2) {
+        // If index is 1, insert "price" into product_details
         updatedGeneralDetails = isChecked
           ? prevData.details.product_details.includes("price")
             ? prevData.details.product_details.filter((item) => item !== name)
@@ -150,14 +157,37 @@ function CreateTemplate() {
     console.log(createOrderJSONData);
   };
   
-  
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = localStorage.getItem('loginToken');
+        const response = await getDocumentTemplateDetailsByIdAPI(id, token);
+        console.log(response);
+        setCreateOrderJSONData(response.data);
+        // setLoading(false);
+      } catch (error) {
+        console.log(error.message);
+        // setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (createOrderJSONData && createOrderJSONData.user_template_id) {
+      fetchTemplateDetails(createOrderJSONData.user_template_id);
+    }
+  }, [createOrderJSONData]);
+
+
   
 
 
 
   return (
     <>
-      <PageHeader ghost title="Create a new Document Template" />
+      <PageHeader ghost title="View your Document Template" />
       <Main>
         <Row gutter={15}>
           <Col xs={24}>
@@ -173,10 +203,10 @@ function CreateTemplate() {
                               <div className="add-product-content">
                                 <Cards title="Template Form">
                                   <Form.Item label="Template Name">
-                                    <Input name="name" onChange={handleNormalFieldChange} />
+                                    <Input name="name" value={createOrderJSONData?.name} onChange={handleNormalFieldChange} />
                                   </Form.Item>
                                   <Form.Item label="Document Type">
-                                    <Input name="type" onChange={handleNormalFieldChange} />
+                                    <Input name="name" value={createOrderJSONData?.type} onChange={handleNormalFieldChange} />
                                   </Form.Item>
 
                                   <div style={{ display: 'flex', gap: '20px', marginBottom: '2rem' }}>
@@ -209,17 +239,10 @@ function CreateTemplate() {
                             <Form.Item label="Choose Template">
                               <Select
                                 style={{ width: '100%' }}
-                                onChange={(e) => {
-                                  fetchTemplateDetails(e);
-                                  setCreateOrderJSONData((prevData) => ({
-                                    ...prevData,
-                                    details: {
-                                      ...prevData.details,
-                                      product_details: [],
-                                    },
-                                    user_template_id: e,
-                                  }));
-                                }}
+                                // onChange={(e) => {
+                                //   fetchTemplateDetails(e);
+                                // }}
+                                value={templateList.length > 0 && templateList.find(obj => obj.id === createOrderJSONData?.user_template_id)?.name}
                               >
                                 {templateList?.map((item, index) => (
                                   <Option value={item.id} key={index}>
@@ -254,13 +277,13 @@ function CreateTemplate() {
                             </Cards>
                           </div>
                         ) : null}
-                        <div className="add-form-action">
+                        {/* <div className="add-form-action">
                           <Form.Item>
-                            <Button size="large" htmlType="submit" type="primary" raised onClick={handleSubmit}>
+                            <Button size="large" htmlType="submit" type="primary" raised onClick={()=>console.log(createOrderJSONData)}>
                               Save Template
                             </Button>
                           </Form.Item>
-                        </div>
+                        </div> */}
                       </BasicFormWrapper>
                     </Form>
                   </AddProductForm>
@@ -274,4 +297,4 @@ function CreateTemplate() {
   );
 }
 
-export default CreateTemplate;
+export default EditDocumentTemplate;

@@ -208,11 +208,11 @@ function Invoice() {
                           </li>
                         </ul> */}
                         <Heading className="summary-total" as="h4">
-                          <span className="summary-total-label">Total : </span>
+                          {invoiceData?.total_amount && <span className="summary-total-label">Total : </span>}
                           <span className="summary-total-amount">{invoiceData?.total_amount}</span>
                         </Heading>
                         <Heading as="h6">
-                          <span className="summary-total-label">(in words) : </span>
+                          {invoiceData?.total_amount_in_words && <span className="summary-total-label">(in words) : </span>}
                           <span>{invoiceData?.total_amount_in_words}</span>
                         </Heading>
                       </div>

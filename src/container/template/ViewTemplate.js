@@ -40,7 +40,7 @@ function ViewTemplate() {
         action: (
           <div className="table-actions">
             <>
-              <Button className="btn-icon" type="primary" shape="circle" onClick={()=>history.push(`/admin/template/edit-template?id=${value.id}`)}>
+              <Button className="btn-icon" type="primary" shape="circle" onClick={()=>history.push(`/admin/template/edit?id=${value.id}`)}>
                 <FeatherIcon icon="eye" size={16} />
               </Button>
             </>

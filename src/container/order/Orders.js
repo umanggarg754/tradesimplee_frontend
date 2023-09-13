@@ -121,7 +121,7 @@ function Orders() {
                 className="btn-icon"
                 type="primary"
                 shape="circle"
-                onClick={() => history.push(`/admin/ecommerce/edit-order?id=${value.id}`)}
+                onClick={() => history.push(`/admin/orders/edit-orders?id=${value.id}`)}
               >
                 <FeatherIcon icon="eye" size={16} />
               </Button>

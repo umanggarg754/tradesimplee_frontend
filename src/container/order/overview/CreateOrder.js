@@ -45,8 +45,8 @@ function CreateOrder() {
 
   columns?.unshift({
     title: 'Serial No.',
-    dataIndex: 'serialno',
-    key: 'serialno',
+    dataIndex: 'serial_num',
+    key: 'serial_num',
   });
 
   // const handleSubmit = values => {
@@ -146,6 +146,7 @@ function CreateOrder() {
   };
 
   const handleSubmit = async (event) => {
+    console.log(createOrderJSONData)
     event.preventDefault();
 
     const formData = generateFormData(createOrderJSONData);
@@ -201,7 +202,7 @@ function CreateOrder() {
     columns?.forEach((column, idx) => {
       const { dataIndex, key } = column;
 
-      if (dataIndex === 'serialno') {
+      if (dataIndex === 'serial_num') {
         row[dataIndex] = index + 1;
       } else if (key.substring(0, 5) === 'photo') {
         row[dataIndex] = (
@@ -214,13 +215,22 @@ function CreateOrder() {
             />
           </Form.Item>
         );
+      } else if (idx === 1) {
+        row[dataIndex] = (
+          <Form.Item>
+            <Input.TextArea rows={3} 
+              name={dataIndex}
+              onChange={(e) => handleProductFieldChange(index, e)}
+              style={{ width: '400px'}} />
+          </Form.Item>
+        );
       } else {
         row[dataIndex] = (
           <Form.Item>
             <Input
               name={dataIndex}
               onChange={(e) => handleProductFieldChange(index, e)}
-              style={{ width: idx === 1 ? '400px' : '100px' }}
+              style={{ width: '100px' }}
             />
           </Form.Item>
         );
@@ -462,6 +472,10 @@ function CreateOrder() {
                                       style={{ width: '100%' }}
                                       onChange={(e) => {
                                         fetchTemplateDetails(e);
+                                        setCreateOrderJSONData((prevData) => ({
+                                          ...prevData,
+                                          user_template_id: e,
+                                        }));
                                       }}
                                     >
                                       {templateList?.map((item, index) => (
