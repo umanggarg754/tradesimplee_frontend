@@ -81,7 +81,7 @@ function CompanyRegister() {
             label="Bank Details"
             rules={[{ required: true, message: 'Please input your bank details!'}]}
           >
-            <Input name="bank_details" onChange={handleChange}/>
+            <Input.TextArea rows={5} name="bank_details" onChange={handleChange}/>
           </Form.Item>
           
           <div className="auth-form-action">

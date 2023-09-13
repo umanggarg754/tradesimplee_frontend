@@ -246,7 +246,7 @@ function ContactTable() {
 
   listContact
     ?.map(user => {
-      const { id, name, type, email, phone, company, status, city, country } = user;
+      const { id, name, email, phone, company, status, city, country } = user;
 
       return usersTableData.push({
         key: id,
@@ -265,7 +265,6 @@ function ContactTable() {
         ),
         email,
         company,
-        type,
         phone,
         status,
         action: (
@@ -317,11 +316,6 @@ function ContactTable() {
       title: 'Company',
       dataIndex: 'company',
       key: 'company',
-    },
-    {
-      title: 'Type',
-      dataIndex: 'type',
-      key: 'type',
     },
     {
       title: 'Phone',
@@ -446,7 +440,7 @@ function ContactTable() {
                   </Form.Item> */}
 
                   <Form.Item label="Background">
-                    <Input name="background" placeholder="Background" onChange={handleChangeAddNew}/>
+                    <Input.TextArea rows={5} name="background" placeholder="Background" onChange={handleChangeAddNew} />
                   </Form.Item>
 
                   <Form.Item label="Status">
@@ -461,9 +455,9 @@ function ContactTable() {
                     <Input name="city" placeholder="Input City" onChange={handleChangeAddNew}/>
                   </Form.Item>
 
-                  <Form.Item label="Type">
+                  {/* <Form.Item label="Type">
                     <Input name="type" placeholder="Input Type" onChange={handleChangeAddNew}/>
-                  </Form.Item>
+                  </Form.Item> */}
 
                   <Button htmlType="submit" size="default" type="primary" key="submit" onClick={submitAddNewContact}>
                     Add New Contact

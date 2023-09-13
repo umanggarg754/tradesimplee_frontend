@@ -1,498 +1,359 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Form, Input, Table, Select } from 'antd';
-import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
-// import FeatherIcon from 'feather-icons-react';
-import toast from 'react-hot-toast';
-import { useLocation } from 'react-router-dom';
+import { Row, Col, Form, Input, Select, Table } from 'antd';
+// import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
+import {useLocation} from 'react-router-dom';
+// import toast from 'react-hot-toast';
+import { Main, BasicFormWrapper, TableWrapper } from '../../styled';
 import { PageHeader } from '../../../components/page-headers/page-headers';
 import { Cards } from '../../../components/cards/frame/cards-frame';
-import { Main, BasicFormWrapper, TableWrapper } from '../../styled';
-import { Button } from '../../../components/buttons/buttons';
+// import { Button } from '../../../components/buttons/buttons';
 import { AddProductForm } from '../Style';
-import { editOrderAPI, getOrderByIdAPI } from '../../../config/api/orders';
+import { getCurrencyListAPI, getOrderByIdAPI } from '../../../config/api/orders';
 import { getContactAPI } from '../../../config/api/company';
-import { toastStyle } from '../../../utility/helper';
-// import Heading from '../../../components/heading/heading';
-// import { ShareButtonPageHeader } from '../../../components/buttons/share-button/share-button';
-// import { ExportButtonPageHeader } from '../../../components/buttons/export-button/export-button';
-// import { CalendarButtonPageHeader } from '../../../components/buttons/calendar-button/calendar-button';
+// import { toastStyle } from '../../../utility/helper';
+import { getTemplateListAPI, getTemplateDetailsAPI } from '../../../config/api/template';
 
 const { Option } = Select;
 // const { Dragger } = Upload;
 
 function EditOrder() {
-    // Edit your Order
   const [form] = Form.useForm();
-  const history = useHistory();
+  // const history = useHistory();
 
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const id = queryParams.get('id');
+  const [templateDetails, setTemplateDetails] = useState();
 
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const id = queryParams.get('id');
 
-  const columns = [
-    {
-      title: 'Serial No',
-      dataIndex: 'serialno',
-      key: 'serialno',
-    },
-    {
-      title: 'Name',
-      dataIndex: 'product_name',
-      key: 'product_name',
-    },
-    {
-      title: 'Packing',
-      dataIndex: 'packing',
-      key: 'packing',
-    },
-    {
-      title: 'Quantity',
-      dataIndex: 'quantity',
-      key: 'quantity',
-    },
-    {
-      title: 'SQM',
-      dataIndex: 'sqm',
-      key: 'sqm',
-    },
-    {
-      title: 'Price per SQM',
-      dataIndex: 'pricepersqm',
-      key: 'pricepersqm',
-    },
-    {
-      title: 'Box',
-      dataIndex: 'box',
-      key: 'box',
-    },
-    {
-      title: 'Marks & No.',
-      dataIndex: 'marksandnums',
-      key: 'marksandnums',
-    },
-    {
-      title: 'Container',
-      dataIndex: 'container',
-      key: 'container',
-    },
-    {
-      title: 'Design Photo',
-      dataIndex: 'photo',
-      key: 'photo',
-    },
-    {
-      title: 'Pallets',
-      dataIndex: 'pallets',
-      key: 'pallets',
-    },
-    {
-      title: 'Pcs Per Box',
-      dataIndex: 'pcsperbox',
-      key: 'pcsperbox',
-    },
-    {
-      title: 'Brand',
-      dataIndex: 'brand',
-      key: 'brand',
-    },
-    {
-      title: 'Gross Weight',
-      dataIndex: 'grossweight',
-      key: 'grossweight',
-    },
-    {
-      title: 'Total Amount',
-      dataIndex: 'totalamount',
-      key: 'totalamount',
+  const columns = templateDetails?.map((detail, index) => {
+    const title = detail.name.charAt(0).toUpperCase() + detail.name.slice(1);
+    let dataIndex = detail.name
+    let key = detail.type + dataIndex;
+    if(index===0){
+      dataIndex = "product_name"
+      key = "product_name"
+    }else if(index===1){
+      dataIndex = "quantity"
+      key = "quantity"
+    }else if(index===2){
+      dataIndex = "price"
+      key = "price"
     }
-  ];
+    else if(detail.type === "photo"){
+      dataIndex = "photo"
+      key = "photo"
+    }
+    return {
+      title,
+      dataIndex,
+      key,
+    };
+  });
 
-  
+  columns?.unshift({
+    title: 'Serial No.',
+    dataIndex: 'serial_num',
+    key: 'serial_num',
+  });
 
   // const handleSubmit = values => {
   //   setState({ ...state, submitValues: values });
   // };
-const generateFormData = (data) => {
-  const formData = new FormData();
-  console.log(typeof data.products[0].photo === "object")
-  Object.keys(data).forEach((key) => {
-    if (Array.isArray(data[key])) {
-      data[key].forEach((item, index) => {
-        if (typeof item === "object") {
-          Object.keys(item).forEach((subKey) => {
-            const subItem = item[subKey];
-            if (typeof subItem === "object") {
-              // Object.keys(subItem).forEach((subSubKey) => {
-              //   const value = subItem[subSubKey];
-              //   formData.append(`${key}[${index}][${subKey}][${subSubKey}]`, value);
-              // });
-              formData.append(`${key}[${index}][${subKey}]`, subItem);
-            } else {
-              formData.append(`${key}[${index}][${subKey}]`, subItem);
-            }
-          });
-        } else {
-          formData.append(`${key}[${index}]`, item);
-        }
-      });
-    } else if (typeof data[key] === "object") {
-      Object.keys(data[key]).forEach((subKey) => {
-        const value = data[key][subKey];
-        formData.append(`${key}[${subKey}]`, value);
-      });
-    } else {
-      formData.append(key, data[key]);
-    }
-  });
+  // const generateFormData = (data) => {
+  //   const formData = new FormData();
+  //   console.log(typeof data.products[0].photo === 'object');
+  //   Object.keys(data).forEach((key) => {
+  //     if (Array.isArray(data[key])) {
+  //       data[key].forEach((item, index) => {
+  //         if (typeof item === 'object') {
+  //           Object.keys(item).forEach((subKey) => {
+  //             const subItem = item[subKey];
+  //             if (typeof subItem === 'object') {
+  //               // Object.keys(subItem).forEach((subSubKey) => {
+  //               //   const value = subItem[subSubKey];
+  //               //   formData.append(`${key}[${index}][${subKey}][${subSubKey}]`, value);
+  //               // });
+  //               formData.append(`${key}[${index}][${subKey}]`, subItem);
+  //             } else {
+  //               formData.append(`${key}[${index}][${subKey}]`, subItem);
+  //             }
+  //           });
+  //         } else {
+  //           formData.append(`${key}[${index}]`, item);
+  //         }
+  //       });
+  //     } else if (typeof data[key] === 'object') {
+  //       Object.keys(data[key]).forEach((subKey) => {
+  //         const value = data[key][subKey];
+  //         formData.append(`${key}[${subKey}]`, value);
+  //       });
+  //     } else {
+  //       formData.append(key, data[key]);
+  //     }
+  //   });
 
-  
-
-  return formData;
-};
-  
-  
-
-  
-
-
+  //   return formData;
+  // };
 
   const [createOrderJSONData, setCreateOrderJSONData] = useState({
-    contact_id: "",
-    status : "",
-    invoice_number : "",
-    order_number : "",
-    date : "",
-    currency : "",
-    terms_and_conditions : "",
-    customer_notes : "",
-    products : [{
-      serial_num:"",
-      product_name:"",
-      price:"",
-      quantity: "",
-      stauts:"",
-      photo:"",
-    }]
-  })
+    contact_id: '',
+    status: '',
+    invoice_number: '',
+    order_number: '',
+    date: new Date(new Date().getTime() + 330 * 60 * 1000).toISOString().split('T')[0],
+    currency: '',
+    products: [
+    ],
+  });
 
   const handleNormalFieldChange = (e) => {
-    setCreateOrderJSONData(prevData => ({
+    setCreateOrderJSONData((prevData) => ({
       ...prevData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     }));
-    console.log(createOrderJSONData)
   };
-  
 
   const handleProductFieldChange = (index, e) => {
-    setCreateOrderJSONData(prevData => {
+    setCreateOrderJSONData((prevData) => {
       const updatedProducts = [...prevData.products];
       updatedProducts[index] = {
         ...updatedProducts[index],
-        "serial_num": index+1
+        serial_num: index + 1,
       };
       updatedProducts[index] = {
         ...updatedProducts[index],
-        [e.target.name]: e.target.value
+        [e.target.name]: e.target.value,
       };
-  
+
       return {
         ...prevData,
-        products: updatedProducts
+        products: updatedProducts,
       };
     });
+
   };
 
   const handleProductFieldPhotoChange = (index, e) => {
-    setCreateOrderJSONData(prevData => {
+    setCreateOrderJSONData((prevData) => {
       const updatedProducts = [...prevData.products];
       updatedProducts[index] = {
         ...updatedProducts[index],
-        "serial_num": index+1
+        serial_num: index + 1,
       };
       updatedProducts[index] = {
         ...updatedProducts[index],
-        [e.target.name]: e.target.files[0]
+        [e.target.name]: e.target.files[0],
       };
-  
+
       return {
         ...prevData,
-        products: updatedProducts
+        products: updatedProducts,
       };
     });
   };
 
+  // const handleSubmit = async (event) => {
+  //   event.preventDefault();
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
-    const formData = generateFormData(createOrderJSONData)
-
-    console.log(formData)
-    console.log(createOrderJSONData)
-
-    try {
-      const token = localStorage.getItem("loginToken")
-      const response = await editOrderAPI(id, formData, token);
+  //   const formData = generateFormData(createOrderJSONData);
 
 
-      console.log(response)
-      if (response.status===201) {
-        // Handle success
-        console.log('Order created successfully');
-        toast.success('Order Created Successfully 🥳',{...toastStyle.success})
-        const initialOrderData = {
-          contact_id: "",
-          status: "",
-          invoice_number: "",
-          order_number: "",
-          date: "",
-          currency: "",
-          terms_and_conditions: "",
-          customer_notes: "",
-          products: [{
-            serial_num: "",
-            product_name: "",
-            price: "",
-            quantity: "",
-            status: "",
-            photo: ""
-          }]
-        }
-      
-          setCreateOrderJSONData(initialOrderData);
+  //   try {
+  //     const token = localStorage.getItem('loginToken');
+  //     const response = await createOrderAPI(formData, token);
 
-          history.push('/admin/ecommerce/orders')
+  //     if (response.status === 201) {
+  //       // Handle success
+  //       console.log('Order created successfully');
+  //       toast.success('Order Created Successfully 🥳', { ...toastStyle.success });
+  //       const initialOrderData = {
+  //         contact_id: '',
+  //         status: '',
+  //         invoice_number: '',
+  //         order_number: '',
+  //         date: '',
+  //         currency: '',
+  //         // terms_and_conditions: "",
+  //         // customer_notes: "",
+  //         products: [
+  //           {
+  //             serial_num: '',
+  //             product_name: '',
+  //             price: '',
+  //             quantity: '',
+  //             status: '',
+  //             photo: '',
+  //             sqm: '',
+  //             pricepersqm: '',
+  //           },
+  //         ],
+  //       };
 
+  //       setCreateOrderJSONData(initialOrderData);
+
+  //       history.push('/admin/orders/list');
+  //     } else {
+  //       // Handle error
+  //       console.error('Error creating order');
+  //       toast.error('Something Bad happened', { ...toastStyle.error });
+  //     }
+  //   } catch (error) {
+  //     console.error('Error:', error);
+  //     toast.error('Something Bad happened', { ...toastStyle.error });
+  //   }
+  // };
+
+  const createRow = (index) => {
+    const row = {};
+    columns?.forEach((column, idx) => {
+      const { dataIndex, key } = column;
+
+      if (dataIndex === 'serial_num') {
+        row[dataIndex] = index + 1;
+      } else if (key.substring(0, 5) === 'photo') {
+        row[dataIndex] = (
+          <Form.Item>
+            <input
+              name={dataIndex}
+              onChange={(e) => handleProductFieldPhotoChange(index, e)}
+              style={{ width: '200px' }}
+              type="file"
+            />
+          </Form.Item>
+        );
       } else {
-        // Handle error
-        console.error('Error creating order');
-        toast.error('Something Bad happened',{...toastStyle.error})
+        row[dataIndex] = (
+          <Form.Item>
+            <Input
+              name={dataIndex}
+              onChange={(e) => handleProductFieldChange(index, e)}
+              style={{ width: idx === 1 ? '400px' : '100px' }}
+            />
+          </Form.Item>
+        );
       }
-    } catch (error) {
-      console.error('Error:', error);
-      toast.error('Something Bad happened',{...toastStyle.error})
-    }
+    });
+    return row;
   };
-  
 
+  // Create the dataSource array by calling createRow function
 
-  const dataSource = [
-    {
-      serialno : (
-        <Form.Item>
-          {/* <Input name="serialno"/> */}
-          <p>1</p>
-        </Form.Item>
-      ),
-      product_name : (
-        <Form.Item>
-          <Input name="product_name" onChange={(e)=>handleProductFieldChange(0, e)}/>
-        </Form.Item>
-      ),
-      packing : (
-        <Form.Item>
-          <Input name="packing" onChange={(e)=>handleProductFieldChange(0, e)}/>
-        </Form.Item>
-      ),
-      quantity : (
-        <Form.Item>
-          <Input name="quantity" onChange={(e)=>handleProductFieldChange(0, e)}/>
-        </Form.Item>
-      ),
-      sqm : (
-        <Form.Item>
-          <Input name="sqm" onChange={(e)=>handleProductFieldChange(0, e)}/>
-        </Form.Item>
-      ),
-      pricepersqm : (
-        <Form.Item>
-          <Input name="pricepersqm" onChange={(e)=>handleProductFieldChange(0, e)}/>
-        </Form.Item>
-      ),
-      box : (
-        <Form.Item>
-          <Input name="box" onChange={(e)=>handleProductFieldChange(0, e)}/>
-        </Form.Item>
-      ),
-      marksandnums : (
-        <Form.Item>
-          <Input name="marksandnums" onChange={(e)=>handleProductFieldChange(0, e)}/>
-        </Form.Item>
-      ),
-      container : (
-        <Form.Item>
-          <Input name="container" onChange={(e)=>handleProductFieldChange(0, e)}/>
-        </Form.Item>
-      ),
-      photo : (
-        <Form.Item>
-          <input type="file" name="photo" onChange={(e)=>handleProductFieldPhotoChange(0, e)}/>
-        </Form.Item>
-      ),
-      pallets : (
-        <Form.Item>
-          <Input name="pallets" onChange={(e)=>handleProductFieldChange(0, e)}/>
-        </Form.Item>
-      ),
-      pcsperbox : (
-        <Form.Item>
-          <Input name="pcsperbox" onChange={(e)=>handleProductFieldChange(0, e)}/>
-        </Form.Item>
-      ),
-      brand : (
-        <Form.Item>
-          <Input name="brand" onChange={(e)=>handleProductFieldChange(0, e)}/>
-        </Form.Item>
-      ),
-      grossweight : (
-        <Form.Item>
-          <Input name="grossweight" onChange={(e)=>handleProductFieldChange(0, e)}/>
-        </Form.Item>
-      ),
-      totalamount : (
-        <Form.Item>
-          <Input name="price" onChange={(e)=>handleProductFieldChange(0, e)}/>
-        </Form.Item>
-      )
-    }
-  ]
+  const dataSource = [createRow(0)]
 
+  const [productRow, setProductRow] = useState([]);
 
-  const [productRow, setProductRow] = useState(dataSource);
-  
+  // const addProductBtn = () => {
+  //   const idx = productRow.length;
 
-  const addProductBtn = () =>{
+  //   const tdataSource = createRow(idx);
+  //   const newRows = [...productRow, tdataSource];
+  //   setProductRow(newRows);
 
-    const idx=productRow.length+1;
-    const tempDataSource = {
-      serialno : (
-        <Form.Item>
-          {/* <Input name={`serialno-${idx}`} defaultValue={idx} /> */}
-          <p>{idx}</p>
-        </Form.Item>
-      ),
-      product_name : (
-        <Form.Item>
-          <Input name="product_name" onChange={(e)=>handleProductFieldChange(idx-1, e)}/>
-        </Form.Item>
-      ),
-      packing : (
-        <Form.Item>
-          <Input name="packing" onChange={(e)=>handleProductFieldChange(idx-1, e)}/>
-        </Form.Item>
-      ),
-      quantity : (
-        <Form.Item>
-          <Input name="quantity" onChange={(e)=>handleProductFieldChange(idx-1, e)}/>
-        </Form.Item>
-      ),
-      sqm : (
-        <Form.Item>
-          <Input name="sqm" onChange={(e)=>handleProductFieldChange(idx-1, e)}/>
-        </Form.Item>
-      ),
-      pricepersqm : (
-        <Form.Item>
-          <Input name="pricepersqm" onChange={(e)=>handleProductFieldChange(idx-1, e)}/>
-        </Form.Item>
-      ),
-      box : (
-        <Form.Item>
-          <Input name="box" onChange={(e)=>handleProductFieldChange(idx-1, e)}/>
-        </Form.Item>
-      ),
-      marksandnums : (
-        <Form.Item>
-          <Input name="marksandnums" onChange={(e)=>handleProductFieldChange(idx-1, e)}/>
-        </Form.Item>
-      ),
-      container : (
-        <Form.Item>
-          <Input name="container" onChange={(e)=>handleProductFieldChange(idx-1, e)}/>
-        </Form.Item>
-      ),
-      photo : (
-        <Form.Item>
-          <input type="file" name="photo" onChange={(e)=>handleProductFieldPhotoChange(idx-1, e)}/>
-        </Form.Item>
-      ),
-      pallets : (
-        <Form.Item>
-          <Input name="pallets" onChange={(e)=>handleProductFieldChange(idx-1, e)}/>
-        </Form.Item>
-      ),
-      pcsperbox : (
-        <Form.Item>
-          <Input name="pcsperbox" onChange={(e)=>handleProductFieldChange(idx-1, e)}/>
-        </Form.Item>
-      ),
-      brand : (
-        <Form.Item>
-          <Input name="brand" onChange={(e)=>handleProductFieldChange(idx-1, e)}/>
-        </Form.Item>
-      ),
-      grossweight : (
-        <Form.Item>
-          <Input name="grossweight" onChange={(e)=>handleProductFieldChange(idx-1, e)}/>
-        </Form.Item>
-      ),
-      totalamount : (
-        <Form.Item>
-          <Input name="price" onChange={(e)=>handleProductFieldChange(idx-1, e)}/>
-        </Form.Item>
-      )
-    }
-    const newRows = [...productRow, tempDataSource];
-    setProductRow(newRows);
+  // };
 
+  // const deleteProductBtn = () => {
+  //   const newArray = productRow.slice(0, -1);
+  //   const updatedProducts = [...createOrderJSONData.products];
+  //   updatedProducts.pop();
+  //   const updatedCreateOrderJSONData = {
+  //     ...createOrderJSONData,
+  //     products: updatedProducts,
+  //   };
 
-    const newProduct = {
-      serial_num:"",
-      product_name:"",
-      price:"",
-      quantity: "",
-      stauts:"",
-      photo:"",
-      other_details:{
-        packing:"",
-        box:"",
-        marksandnums:"",
-        sqm : "",
-        pricepersqm : "",
-        container : "",
-        pallets : "",
-        pcsperbox : "",
-        brand : "",
-        grossweight : ""
-      }
-    };
-    const updatedCreateOrderJSONData = { ...createOrderJSONData };
-    updatedCreateOrderJSONData.products.push(newProduct);
-    setCreateOrderJSONData(updatedCreateOrderJSONData);
-  }
+  //   setCreateOrderJSONData(updatedCreateOrderJSONData);
 
-  const deleteProductBtn = () =>{
-    const newArray = productRow.slice(0, -1);
-    const updatedProducts = [...createOrderJSONData.products];
-    updatedProducts.pop();
-    const updatedCreateOrderJSONData = {
-      ...createOrderJSONData,
-      products: updatedProducts
-    };
-  
-    setCreateOrderJSONData(updatedCreateOrderJSONData);
-
-    setProductRow(newArray);
-  }
-
+  //   setProductRow(newArray);
+  // };
 
   // const submitOrder = () => {
   //   console.log(createOrderJSONData,"log")
   // }
 
-  let tempOrderDetails = {}
+  const [customerDetail, setCustomerDetail] = useState([]);
+
+  const [currencyList, setCurrencyList] = useState([]);
+
+  const [templateList, setTemplateList] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = localStorage.getItem('loginToken');
+        const response = await getContactAPI(token);
+        console.log(response);
+        setCustomerDetail(response.data);
+
+        const response2 = await getCurrencyListAPI(token);
+        console.log(response2);
+        setCurrencyList(response2.data);
+        // setLoading(false);
+      } catch (error) {
+        console.log(error.message);
+        // setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = localStorage.getItem('loginToken');
+
+        const response = await getCurrencyListAPI(token);
+        console.log(response);
+        setCurrencyList(response.data);
+        // setLoading(false);
+      } catch (error) {
+        console.log(error.message);
+        // setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = localStorage.getItem('loginToken');
+
+        const response = await getTemplateListAPI(token);
+        console.log(response);
+        setTemplateList(response.data);
+        // setLoading(false);
+      } catch (error) {
+        console.log(error.message);
+        // setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const fetchTemplateDetails = async (id) => {
+    try {
+      console.log(productRow)
+      const token = localStorage.getItem('loginToken');
+
+      const response = await getTemplateDetailsAPI(id, token);
+      console.log(response);
+      setTemplateDetails(response.data.details);
+      setProductRow([createRow[0]]);
+      // setLoading(false);
+    } catch (error) {
+      console.log(error.message);
+      // setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (templateDetails !== null) {
+      setProductRow(dataSource);
+    }
+  }, [templateDetails]); 
 
 
   useEffect(() => {
@@ -501,8 +362,7 @@ const generateFormData = (data) => {
         const token = localStorage.getItem('loginToken');
         const response = await getOrderByIdAPI(id, token);
         console.log(response);
-        tempOrderDetails=response.data
-        // setTempOrderDetails(response.data);
+        setCreateOrderJSONData(response.data);
         // setLoading(false);
       } catch (error) {
         console.log(error.message);
@@ -512,35 +372,16 @@ const generateFormData = (data) => {
 
     fetchData();
   }, []);
-
-  const [customerDetail, setCustomerDetail] = useState([])
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const token = localStorage.getItem('loginToken');
-        const response = await getContactAPI(token);
-        console.log(response);
-        setCustomerDetail(response.data)
-        // setLoading(false);
-      } catch (error) {
-        console.log(error.message);
-        // setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  
-
+    if (createOrderJSONData && createOrderJSONData.user_template_id) {
+      fetchTemplateDetails(createOrderJSONData.user_template_id);
+    }
+  }, [createOrderJSONData]);
 
   return (
     <>
-      <PageHeader
-        ghost
-        title="Edit your Order"
-      />
+      <PageHeader ghost title="Edit your Order" />
       <Main>
         <Row gutter={15}>
           <Col xs={24}>
@@ -548,7 +389,7 @@ const generateFormData = (data) => {
               <Row gutter={25} justify="center">
                 <Col xxl={36} md={36} sm={36} xs={24}>
                   <AddProductForm>
-                    <Form style={{ width: '100%' }} form={form} name="editProduct">
+                    <Form style={{ width: '100%' }} form={form} name="CreateOrder">
                       <BasicFormWrapper>
                         <div className="add-product-block">
                           <Row gutter={15}>
@@ -557,89 +398,116 @@ const generateFormData = (data) => {
                                 <Cards title="Order Form">
                                   <Form.Item label="Customer Name/Detail">
                                     {/* <Input name="contact_id" onChange={handleNormalFieldChange}/> */}
-                                    <Select style={{ width: '100%' }} onChange={(e)=>{
-                                      setCreateOrderJSONData(prevData => ({
-                                        ...prevData,
-                                        contact_id: e
-                                      }));
-                                    }}>
-                                      {customerDetail?.map((item,index)=>(
-                                        <Option value={item.id} key={index}>{item.name}</Option>
+                                    <Select
+                                      style={{ width: '100%' }}
+                                      // onChange={(e) => {
+                                      //   setCreateOrderJSONData((prevData) => ({
+                                      //     ...prevData,
+                                      //     contact_id: e,
+                                      //   }));
+                                      // }}
+                                      value={customerDetail.length > 0 && customerDetail.find(obj => obj.id === createOrderJSONData?.contact_id)?.name}
+                                    >
+                                      {customerDetail?.map((item, index) => (
+                                        <Option value={item.id} key={index}>
+                                          {item.name}
+                                        </Option>
                                       ))}
                                     </Select>
                                   </Form.Item>
                                   <Form.Item label="Status">
-                                    <Input name="status" defaultValue={tempOrderDetails?.status} onChange={handleNormalFieldChange}/>
+                                    <Input name="status" value={createOrderJSONData?.status} onChange={handleNormalFieldChange} />
                                   </Form.Item>
                                   <Form.Item label="Invoice number">
-                                    <Input name="invoice_number" onChange={handleNormalFieldChange}/>
+                                    <Input name="invoice_number" value={createOrderJSONData?.invoice_number} onChange={handleNormalFieldChange} />
                                   </Form.Item>
                                   <Form.Item label="Order No">
-                                    <Input name="order_number" onChange={handleNormalFieldChange}/>
+                                    <Input name="order_number" value={createOrderJSONData?.order_number} onChange={handleNormalFieldChange} />
                                   </Form.Item>
                                   <Form.Item label="Date">
-                                    <Input name="date" onChange={handleNormalFieldChange}/>
+                                    <Input
+                                      name="date"
+                                      onChange={handleNormalFieldChange}
+                                      value={createOrderJSONData?.date}
+                                    />
                                   </Form.Item>
                                   <Form.Item label="Currency">
-                                    <Input name="currency" onChange={handleNormalFieldChange}/>
+                                    {/* <Input name="currency" onChange={handleNormalFieldChange}/> */}
+                                    <Select
+                                      style={{ width: '100%' }}
+                                      // onChange={(e) => {
+                                      //   setCreateOrderJSONData((prevData) => ({
+                                      //     ...prevData,
+                                      //     currency: e,
+                                      //   }));
+                                      // }}
+                                      value={currencyList.length > 0 && currencyList.find(obj => obj.id === parseInt(createOrderJSONData?.currency))?.currency}
+                                    >
+                                      {currencyList?.map((item, index) => (
+                                        <Option value={item.id} key={index}>
+                                          {item.currency}
+                                        </Option>
+                                      ))}
+                                    </Select>
                                   </Form.Item>
-
-                                  {/* <Form.Item name="price" initialValue="120" label="Price">
-                                    <div className="input-prepend-wrap">
-                                      <span className="input-prepend">
-                                        <FeatherIcon icon="dollar-sign" size={14} />
-                                      </span>
-                                      <InputNumber style={{ width: '100%' }} />
-                                    </div>
-                                  </Form.Item>
-
-                                  <Form.Item name="discount" initialValue="20%" label="Discount">
-                                    <div className="input-prepend-wrap">
-                                      <span className="input-prepend">
-                                        <FeatherIcon icon="percent" size={14} />
-                                      </span>
-                                      <InputNumber style={{ width: '100%' }} />
-                                    </div>
-                                  </Form.Item> */}
-
-                                  {/* <Form.Item name="status" initialValue="published" label="Status">
-                                    <Radio.Group>
-                                      <Radio value="published">Published</Radio>
-                                      <Radio value="draft">Draft</Radio>
-                                    </Radio.Group>
-                                  </Form.Item> */}
-
-                                  {/* <Form.Item
-                                    name="description"
-                                    initialValue="lorem ipsum dolor sit amit"
-                                    label="Product Description"
-                                  >
-                                    <Input.TextArea rows={5} />
-                                  </Form.Item> */}
                                 </Cards>
                               </div>
-                              <div className="add-product-content" style={{marginTop:"2rem"}}>
-                                <Cards title="Product Detail">
-                                <Row gutter={15}>
-                                  <Col md={24}>
-                                    <TableWrapper className="table-order table-responsive">
-                                      <Table
-                                        dataSource={productRow}
-                                        columns={columns}
-                                      />
-                                    </TableWrapper>
-                                  </Col>
-                                </Row>
-                                <Button size="small" htmlType="submit" type="primary" raised onClick={addProductBtn}>
+
+                              <div className="add-product-content" style={{ marginTop: '2rem' }}>
+                                <Cards title="Template Details">
+                                  <Form.Item label="Choose Template">
+                                    {/* <Input name="contact_id" onChange={handleNormalFieldChange}/> */}
+                                    <Select
+                                      style={{ width: '100%' }}
+                                      // onChange={(e) => {
+                                      //   fetchTemplateDetails(e);
+                                      // }}
+                                      value={templateList.length > 0 && templateList.find(obj => obj.id === createOrderJSONData?.user_template_id)?.name}
+                                    >
+                                      {templateList?.map((item, index) => (
+                                        <Option value={item.id} key={index}>
+                                          {item.name}
+                                        </Option>
+                                      ))}
+                                    </Select>
+                                  </Form.Item>
+                                </Cards>
+                              </div>
+                              {templateDetails ? (
+                                <div className="add-product-content" style={{ marginTop: '2rem' }}>
+                                  <Cards title="Product Detail">
+                                    <Row gutter={15}>
+                                      <Col md={24}>
+                                        <TableWrapper className="table-order table-responsive">
+                                          <Table dataSource={createOrderJSONData?.products.map(item => ({ ...item, ...item.other_details }))} columns={columns} />
+                                        </TableWrapper>
+                                      </Col>
+                                    </Row>
+                                    {/* <Button
+                                      size="small"
+                                      htmlType="submit"
+                                      type="primary"
+                                      raised
+                                      onClick={addProductBtn}
+                                    >
                                       Add Another Product
                                     </Button>
-                                    {productRow.length>=2?(
-                                      <Button size="small" htmlType="submit" type="secondary" raised onClick={deleteProductBtn} style={{marginLeft:"2rem"}}>Delete
+                                    {productRow.length >= 2 ? (
+                                      <Button
+                                        size="small"
+                                        htmlType="submit"
+                                        type="secondary"
+                                        raised
+                                        onClick={deleteProductBtn}
+                                        style={{ marginLeft: '2rem' }}
+                                      >
+                                        Delete
                                       </Button>
-                                    ):null}
-                                </Cards>
-                              </div>
-                              <div className="add-product-content" style={{marginTop:"2rem"}}>
+                                    ) : null} */}
+                                  </Cards>
+                                </div>
+                              ) : null}
+                              {/* <div className="add-product-content" style={{marginTop:"2rem"}}>
                                 <Cards title="">
                                   <Form.Item
                                     label="Terms and Conditions"
@@ -652,7 +520,7 @@ const generateFormData = (data) => {
                                     <Input.TextArea rows={5} name="customer_notes" onChange={handleNormalFieldChange}/>
                                   </Form.Item>
                                 </Cards>
-                              </div>
+                              </div> */}
                             </Col>
                           </Row>
                         </div>
@@ -686,9 +554,9 @@ const generateFormData = (data) => {
                             >
                               Generate Proforma
                             </Button> */}
-                            <Button size="large" htmlType="submit" type="primary" raised onClick={handleSubmit}>
+                            {/* <Button size="large" htmlType="submit" type="primary" raised onClick={()=>console.log(createOrderJSONData)}>
                               Save Order
-                            </Button>
+                            </Button> */}
                           </Form.Item>
                         </div>
                       </BasicFormWrapper>

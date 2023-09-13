@@ -13,7 +13,7 @@ function OrdersRoutes() {
   const { path } = useRouteMatch();
   return (
     <Switch>
-      <Route path={`${path}/all-orders`} component={AllOrder} />
+      <Route path={`${path}/list`} component={AllOrder} />
       <Route path={`${path}/create-orders`} component={CreateOrder} />
       <Route path={`${path}/edit-orders`} component={EditOrder} />
       <Route path={`${path}/invoice`} component={Invoice} />
