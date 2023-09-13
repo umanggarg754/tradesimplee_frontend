@@ -24,7 +24,7 @@ function CreateOrder() {
 
   const columns = templateDetails?.map((detail, index) => {
     const title = detail.name.charAt(0).toUpperCase() + detail.name.slice(1);
-    let dataIndex = detail.name.toLowerCase().replace(/\s/g, '_');
+    let dataIndex = detail.name;
     let key = detail.type + dataIndex;
     if(index===0){
       dataIndex = "product_name"

@@ -246,7 +246,7 @@ function ContactTable() {
 
   listContact
     ?.map(user => {
-      const { id, name, type, email, phone, company, status, city, country } = user;
+      const { id, name, email, phone, company, status, city, country } = user;
 
       return usersTableData.push({
         key: id,
@@ -265,7 +265,6 @@ function ContactTable() {
         ),
         email,
         company,
-        type,
         phone,
         status,
         action: (
@@ -317,11 +316,6 @@ function ContactTable() {
       title: 'Company',
       dataIndex: 'company',
       key: 'company',
-    },
-    {
-      title: 'Type',
-      dataIndex: 'type',
-      key: 'type',
     },
     {
       title: 'Phone',

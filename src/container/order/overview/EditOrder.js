@@ -28,7 +28,7 @@ function EditOrder() {
 
   const columns = templateDetails?.map((detail, index) => {
     const title = detail.name.charAt(0).toUpperCase() + detail.name.slice(1);
-    let dataIndex = detail.name.toLowerCase().replace(/\s/g, '_');
+    let dataIndex = detail.name
     let key = detail.type + dataIndex;
     if(index===0){
       dataIndex = "product_name"
@@ -406,7 +406,7 @@ function EditOrder() {
                                       //     contact_id: e,
                                       //   }));
                                       // }}
-                                      value={customerDetail.length > 0 &&customerDetail.find(obj => obj.id === createOrderJSONData?.contact_id)?.name}
+                                      value={customerDetail.length > 0 && customerDetail.find(obj => obj.id === createOrderJSONData?.contact_id)?.name}
                                     >
                                       {customerDetail?.map((item, index) => (
                                         <Option value={item.id} key={index}>
@@ -441,7 +441,7 @@ function EditOrder() {
                                       //     currency: e,
                                       //   }));
                                       // }}
-                                      value={currencyList.length > 0 && createOrderJSONData && createOrderJSONData.currency && currencyList[createOrderJSONData.currency]?.currency}
+                                      value={currencyList.length > 0 && currencyList.find(obj => obj.id === parseInt(createOrderJSONData?.currency))?.currency}
                                     >
                                       {currencyList?.map((item, index) => (
                                         <Option value={item.id} key={index}>
